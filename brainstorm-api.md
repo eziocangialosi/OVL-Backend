@@ -1,12 +1,13 @@
 Brainstorm on the api requests to implement 
 ------------
-[ ] credentials
-[ ] position gps + horodatage
-[ ] fichier gpx --> historique
-[ ] OAuth2
-[ ] Status IoT (Codes Erreur, %Bat, Alarme On/Off)
-[ ] Rq act/désac alarme
-[ ] Zone "safe" :
-[ ] Configuration + Rq
-[ ] Ajout IoT et désig par nom
-    --> API renvoie 2 topics(RX/TX) et numéro IoT interne
+- [ ] credentials
+- [ ] position gps + horodatage
+- [ ] fichier gpx --> historique
+- [ ] OAuth2
+- [ ] Status IoT (Codes Erreur, %Bat, Alarme On/Off)
+- [ ] Rq act/désac alarme
+- [ ] Zone "safe" :
+    - [ ] Configuration
+    - [ ] Rq creation/modif
+- [ ] Ajout IoT et désig par nom
+    --> API renvoie 2 topics (RX/TX) et numéro IoT interne
