@@ -1,6 +1,6 @@
 Brainstorm on the api requests to implement 
 ------------
-- [ ] credentials
+- [ ] credentials user
 - [ ] position gps + horodatage
 - [ ] fichier gpx --> historique
 - [ ] OAuth2
@@ -10,4 +10,5 @@ Brainstorm on the api requests to implement
     - [ ] Configuration
     - [ ] Rq creation/modif
 - [ ] Ajout IoT et désig par nom
-    --> API renvoie 2 topics (RX/TX) et numéro IoT interne
+    --> API renvoie 2 topics (RX/TX), numéro IoT interne + credentials MQTT
+- [ ] Activation/Désactivation charge sur batterie véhicule
