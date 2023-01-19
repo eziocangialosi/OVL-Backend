@@ -22,8 +22,8 @@ Brainstorm on the api requests to implement
 - GET /user/:mail :password -> json{“session-id” : int ,”error”:  {“code” : int, “msg” : string}}
 - GET /status/ :id -> json{« status » : {“error” : int,  “battery” :  int, “alarm” : bool}}
 - POST /user/:mail :password -> json{”error”:  {“code” : int, “msg” : string}}
+- POST /iot /:name -> json{”error”:  {“code” : int, “msg” : string}}
 - PUT /alarm/ :id :state -> json{”error”:  {“code” : int, “msg” : string}}
 - PUT /allow_charge / :id :state -> json{”error”:  {“code” : int, “msg” : string}}
-- POST /iot /:name -> json{”error”:  {“code” : int, “msg” : string}}
 - DELETE /iot /:name -> json{”error”:  {“code” : int, “msg” : string}}
 - DELETE /user /:mail -> json{”error”:  {“code” : int, “msg” : string}}
