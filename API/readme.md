@@ -6,13 +6,13 @@ This file document how to call the API and how she will respond, in all response
 
 ## Table of content
 
-[GET API Call](##get-api-call "How to make a GET API Call and what data is retuned.")
+[GET API Call](#get-api-call "How to make a GET API Call and what data is retuned.")
 
-[POST API Call](##post-api-call "How to make a POST API Call and what data is retuned.")
+[POST API Call](#post-api-call "How to make a POST API Call and what data is retuned.")
 
-[PUT API Call](##put-api-call "How to make a PUT API Call and what data is retuned.")
+[PUT API Call](#put-api-call "How to make a PUT API Call and what data is retuned.")
 
-[DELETE API Call](##delete-api-call "How to make a DELETE API Call and what data is retuned.")
+[DELETE API Call](#delete-api-call "How to make a DELETE API Call and what data is retuned.")
 
 [Sources](#sources "The sources.")
 
