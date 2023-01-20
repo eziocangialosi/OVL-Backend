@@ -1,7 +1,8 @@
 const express = require('express') // Required for the REST API to work.
-
+const date = require('./date')
 const app = express() // Create the REST API
-//Middlewareapp.use(express.json())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const LISTENING_PORT = 8080
 const DEBUG = true
 let ERROR_CODES = new Object()
@@ -11,28 +12,10 @@ ERROR_CODES.AccountUnauthorised = -3
 ERROR_CODES.PositionUnavailable = -4
 
 
-function GetDate() {
-    let date_ob = new Date();
-    let date = ("0" + date_ob.getDate()).slice(-2);
-    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-    let year = date_ob.getFullYear();
-    return (date + "-" + month + "-" + year);
-
-}
-
-function GetTime() {
-    let date_ob = new Date();
-    let hours = date_ob.getHours();
-    let minutes = date_ob.getMinutes();
-    let seconds = date_ob.getSeconds();
-    return (hours+":"+minutes+":"+seconds)
-
-}
-
 function DebugPrint(data) {
     if(DEBUG == true)
     {
-        console.log("["+GetDate()+"] ["+GetTime()+"] -> "+data)
+        console.log("["+date.GetDate()+"] ["+date.GetTime()+"] -> "+data)
     }
 }
 
@@ -86,6 +69,11 @@ function HandleStatusRequest(req,res) {
     res.status(200).json(ToReturn) // Reply with the json object.
 }
 
+function HandleUserAddRequest(req,res) {
+    DebugPrint("Received add user request with the following mail and password : "+req.body.mail+" "+req.body.password)
+    res.status(200).json(GetErrorJson())
+}
+
 app.get('/position/history/:id', (req,res) => { // Endpoint to get history of all positions of a tracker based on his ID.
     HandlePositionHistoryRequest(req,res) // Trigger the History handler.
 })
@@ -102,10 +90,9 @@ app.get('/status/', (req,res) => {
     HandleStatusRequest(req,res) // Trigger the Status handler.
 })
 
-app.post('/user/:mail/:password', (req,res) => {   
-    DebugPrint(req.params.password) 
-    //parkings.push(req.body)   
-    res.status(200).json(GetErrorJson())
+app.post('/user/', (req,res) => {   
+    HandleUserAddRequest(req,res)
+    
 })
 
 app.listen(LISTENING_PORT, () => {  
