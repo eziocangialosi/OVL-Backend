@@ -10,3 +10,4 @@ This repository contains all the backend code for the OVL project including :
 - [x] Define data distribution
 - [ ] Develop "Dummy" API to test purpose
 - [ ] Link API to Database
+- [ ] Complete API Documentation
