@@ -17,8 +17,8 @@
   - Pos_IOT
     | Type         | Name      | Description                                     |
     |--------------|-----------|-------------------------------------------------|
-    | float        | posx      | Position X of the device                        |
-    | float        | posy      | Position Y of the device                        |
+    | float        | posx      | Longitude (Position X) of the device            |
+    | float        | posy      | Latitude (Position Y) of the device             |
     | varchar[255] | lastRq    | Time at which the position was taken            |
     | int          | id_iot    | Unique id to link the data to the IOT device    |
     
