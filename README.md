@@ -6,6 +6,7 @@ This repository contains all the backend code for the OVL project including :
 
 ## TODO List
 
-- [ ] Define API error codes
+- [x] Define API error codes
+- [x] Define data distribution
 - [ ] Develop "Dummy" API to test purpose
 - [ ] Link API to Database
