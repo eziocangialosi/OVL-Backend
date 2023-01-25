@@ -1,5 +1,6 @@
 const express = require('express') // Required for the REST API to work.
 const date = require('./date')
+const mysql = require('./mysql')
 const app = express() // Create the REST API
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -12,7 +13,7 @@ ERROR_CODES.AccountUnauthorised = -3
 ERROR_CODES.PositionUnavailable = -4
 
 
-function DebugPrint(data) {
+function DebugPrint(data) { // THIS DEBUG PRINT.
     if(DEBUG == true)
     {
         console.log("["+date.GetDate()+"] ["+date.GetTime()+"] -> "+data)
@@ -50,11 +51,16 @@ function HandlePositionActualRequest(req,res) {
     res.status(200).json(ToReturn) // Reply with the json object.
 }
 
-function HandleUserInfoRequest(req,res) {
+async function HandleUserInfoRequest(req,res) {
     let ToReturn = new Object() // Create the return json object.
-    DebugPrint("Received user information request for "+req.params.mail+"with password : "+req.params.password+".")
-    ToReturn.error = GetErrorJson() // Storing the ErrorJson ocject template in the ToReturn json object.
-    ToReturn.session_id = 0 // Set the session ID.
+    DebugPrint("Received user information request for "+req.params.mail+" with password : "+req.params.password+".")
+    let data = await mysql.GetUserInformation(req.params.mail,req.params.password)
+    DebugPrint(data)
+    while (data == undefined) {
+        //console.log(data)
+    }
+    ToReturn.error = data.error
+    ToReturn.session_id = data.data // Set the session ID.
     res.status(200).json(ToReturn) // Reply with the json object.
 }
 
@@ -70,9 +76,12 @@ function HandleStatusRequest(req,res) {
 }
 
 function HandleUserAddRequest(req,res) {
+    let ToReturn = new Object() // Create the return json object.
     DebugPrint("Received add user request with the following mail and password : "+req.body.mail+" "+req.body.password)
-    res.status(200).json(GetErrorJson())
+    ToReturn.error = mysql.AddUserToDb(req.body.mail,req.body.password)
+    res.status(200).json(ToReturn)
 }
+
 
 app.get('/position/history/:id', (req,res) => { // Endpoint to get history of all positions of a tracker based on his ID.
     HandlePositionHistoryRequest(req,res) // Trigger the History handler.
@@ -82,8 +91,8 @@ app.get('/position/now/:id', (req,res) => { // Endpoint to get the actual positi
     HandlePositionActualRequest(req,res) // Trigger the Position request.
 })
 
-app.get('/user/:mail/:password', (req,res) => { // Endpoint to get the actual position of a tracker based on his ID.
-    HandleUserInfoRequest(req,res) // Trigegr the user information request handler.
+app.get('/user/:mail/:password', async function (req,res) { // Endpoint to get the actual position of a tracker based on his ID.
+    await HandleUserInfoRequest(req,res) // Trigger the user information request handler.
 })
 
 app.get('/status/', (req,res) => {
