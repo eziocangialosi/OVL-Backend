@@ -38,14 +38,18 @@
     | timestamp | tm_lastLogin | Timestamp of the last user login |
   
   - Status_IOT
-    | Type      | Name          | Description                                                  |
-    |-----------|---------------|--------------------------------------------------------------|
-    | int       | id_iot        | Unique id to link data to the IOT device                     |
-    | int       | status_online | Boolean value used to indicate if the IOT device is online   |
-    | int       | status_charge | Boolean value used to indicate if the IOT device is charging |
-    | int       | status_bat    | Integer of battery percent left                              |
-    | int       | status_alarm  | Boolean value used to indicate if the alarm is yelling       |
-    | timestamp | tm_status     | Time at which the status was retrieved                       |
+    | Type      | Name               | Description                                                                  |
+    |-----------|--------------------|------------------------------------------------------------------------------|
+    | int       | id_iot             | Unique id to link data to the IOT device                                     |
+    | bool      | status_online      | Boolean value used to indicate if the IOT device is online                   |
+    | bool      | status_charge      | Boolean value used to indicate if the IOT device is charging                 |
+    | int       | status_bat         | Integer of battery percent left                                              |
+    | bool      | status_alarm       | Boolean value used to indicate if the alarm is yelling                       |
+    | bool      | status_ecomode     | Boolean value used to indicate if the eco-mode is activated                  |
+    | bool      | status_protection  | Boolean value used to indicate if the protection is on                       |
+    | bool      | status_vh-charge   | Boolean value used to indicate if the tracker can charge on vehicule battery |
+    | bool      | status_gps         | Boolean value used to indicate if the tracker have a gps fix                 |
+    | timestamp | tm_status          | Time at which the status was retrieved                                       |
   
   - Users
     | Type         | Name    | Description                                           |
