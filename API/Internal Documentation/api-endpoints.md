@@ -70,11 +70,6 @@
 | Used to     | Add and link a tracker to the account and get the parameters needed to configure the tracker                            |
 | Json Output | `{"topicTX": string, "topicRX": string, "iot_id": int, "mqtt_pswd": string, "error": {"code": int, "msg": string}}`     |
 
-| DELETE      | /alarm/{id}                               |
-| ----------- | ----------------------------------------- |
-| Used to     | Stop the alarm ringing                    |
-| Json Output | `{"error": {"code": int, "msg": string}}` |
-
 | DELETE      | /iot/{name}                               |
 | ----------- | ----------------------------------------- |
 | Used to     | Delete from system a tracker              |
@@ -82,7 +77,7 @@
 
 | DELETE      | /user/{mail}                              |
 | ----------- | ----------------------------------------- |
-| Used to     | Delete a tracker from system              |
+| Used to     | Delete a user from system                 |
 | Json Output | `{"error": {"code": int, "msg": string}}` |
 
 - POST /user/:mail :password -> json{”error”:  {“code” : int, “msg” : string}}
