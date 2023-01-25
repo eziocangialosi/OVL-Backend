@@ -20,6 +20,11 @@
 | Used to     | Obtain the status of the requested tracer                                                           |
 | Json Output | `{"bat": int, "charge": bool, "alarm": bool, "gps": bool, "error": {"code" : int, "msg" : string}}` |
 
+| GET         | /status_list                                                                                                              |
+|-------------|---------------------------------------------------------------------------------------------------------------------------|
+| Used to     | Obtain the status list of all the user's tracer                                                                           |
+| Json Output | `{"status_list":[{"bat": int, "charge": bool, "alarm": bool, "gps": bool},...], "error": {"code" : int, "msg" : string}}` |
+
 | GET         | /position/now/{id}                                                    |
 | ----------- | --------------------------------------------------------------------- |
 | Used to     | Get the current position of the tracker                               |
