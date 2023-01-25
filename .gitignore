@@ -1,4 +1,5 @@
 /API/node_modules/*
+/API/**/.DS_Store
 API/API/node_modules/
 API/API/
 API/API/node_modules/.package-lock.json
