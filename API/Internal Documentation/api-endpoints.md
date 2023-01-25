@@ -18,12 +18,12 @@
 | GET         | /status/{id}                                                                                        |
 |-------------|-----------------------------------------------------------------------------------------------------|
 | Used to     | Obtain the status of the requested tracer                                                           |
-| Json Output | `{"bat": int, "charge": bool, "alarm": bool, "gps": bool, "error": {"code" : int, "msg" : string}}` |
+| Json Output | `{"bat": int, "charge": bool, "alarm": bool, "protection": bool, "gps": bool, "error": {"code" : int, "msg" : string}}` |
 
-| GET         | /status_list                                                                                                              |
-|-------------|---------------------------------------------------------------------------------------------------------------------------|
-| Used to     | Obtain the status list of all the user's tracer                                                                           |
-| Json Output | `{"status_list":[{"bat": int, "charge": bool, "alarm": bool, "gps": bool},...], "error": {"code" : int, "msg" : string}}` |
+| GET         | /status_list                                                                                                                                  |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| Used to     | Obtain the status list of all the user's tracer                                                                                               |
+| Json Output | `{"status_list":[{"bat": int, "charge": bool, "alarm": bool, "protection": bool, "gps": bool},...], "error": {"code" : int, "msg" : string}}` |
 
 | GET         | /position/now/{id}                                                    |
 | ----------- | --------------------------------------------------------------------- |
@@ -69,6 +69,11 @@
 | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Used to     | Add and link a tracker to the account and get the parameters needed to configure the tracker                            |
 | Json Output | `{"topicTX": string, "topicRX": string, "iot_id": int, "mqtt_pswd": string, "error": {"code": int, "msg": string}}`     |
+
+| DELETE      | /alarm/{id}                               |
+| ----------- | ----------------------------------------- |
+| Used to     | Stop the alarm ringing                    |
+| Json Output | `{"error": {"code": int, "msg": string}}` |
 
 | DELETE      | /iot/{name}                               |
 | ----------- | ----------------------------------------- |
