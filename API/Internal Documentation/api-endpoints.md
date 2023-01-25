@@ -25,6 +25,11 @@
 | Used to     | Obtain all position history of tracker                                                                     |
 | Json Output | `{"history": [{"lon": float, "lat": float, "timestamp": int},...], "error": {"code": int, "msg": string}}` |
 
+| PUT         | /alarm/{id}{state}                        |
+| ----------- | ----------------------------------------- |
+| Used to     | (Des)Active parking mode for the tracker  |
+| Json Output | `{"error": {"code": int, "msg": string}}` |
+
 | PUT         | /sensibility/{id}{diameter}                                |
 | ----------- | ---------------------------------------------------------- |
 | Used to     | Update the diameter of the safe zone                       |
@@ -66,4 +71,3 @@
 | Json Output | `{"error": {"code": int, "msg": string}}` |
 
 - POST /user/:mail :password -> json{”error”:  {“code” : int, “msg” : string}}
-- PUT /alarm/ :id :state -> json{”error”:  {“code” : int, “msg” : string}} ???
