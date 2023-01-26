@@ -4,9 +4,13 @@ var con = mysql.createConnection({
     user: "root",
     password: "Pornhub",
     database: "Test"
-  });
+});
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+});
 
-async function GetErrorJson() {
+function GetErrorJson() {
     let ErrorJson = new Object()
     ErrorJson.ErrorCode = 0
     ErrorJson.Message = "Nothing went wrong"
@@ -14,65 +18,63 @@ async function GetErrorJson() {
 }
 
 
-async function GetUserInformation(mail,pass) {
-    ToReturn = new Object();
-    ToReturn.error = await GetErrorJson();
-    con.connect((err) => {
-        if (err)
-        {
-            ToReturn.error.ErrorCode = -1
-            ToReturn.error.Message = err
-            console.log(err)
-            //throw err
-	        return ToReturn
-        }
-        con.query("SELECT * FROM Test WHERE mail='"+mail+"' AND password='"+pass+"'", (err, result) => {
-            if (err)
-            {
-                ToReturn.error.ErrorCode = -1
-                ToReturn.error.Message = err
-                console.log(err)
-                //throw err
-		    return ToReturn
-            }
-            console.log(result)
-            ToReturn.data = result[0].RowDataPacket
-            return ToReturn
-        });
-      });
-    //return ToReturn
-}
-
-
-function AddUserToDb(mail,password) {
+function GetUserInformation(mail,pass,callback) {
     ToReturn = new Object();
     ToReturn.error = GetErrorJson();
-    con.connect(function(err) {
-        if (err)
-        {
-            ToReturn.error.ErrorCode = -1
-            ToReturn.error.Message = err
-            throw err
+    con.query("SELECT * FROM users WHERE email='"+mail+"' AND password='"+pass+"'", (err, result) => {
+    if (err) {
+        console.error(err)
+        ToReturn.Message = err
+        ToReturn.ErrorCode = 10
+        throw err;
+    }
+    else{
+        ToReturn.data = result[0]
+    }
+    // Callback avec le resultat de la requête SQL
+    callback(ToReturn);
+    } );
+    }
+
+
+function AddUserToDb(mail,password,token,callback) {
+    ToReturn = new Object();
+    ToReturn.error = GetErrorJson();
+    con.query("SELECT * FROM users WHERE email='"+mail+"'", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.Message = err
+            ToReturn.ErrorCode = 10
+            throw err;
         }
-        var sql = "INSERT INTO Test (mail, password) VALUES ('"+mail+"', '"+password+"')";
-        con.query(sql, function (err, result) {
-            if (err)
-            {
-                ToReturn.error.ErrorCode = -1
-                ToReturn.error.Message = err
-                throw err
+        else{
+            if(result[0] != []) {
+                var sql = "INSERT INTO users (email, password, token) VALUES ('"+mail+"', '"+password+"', '"+token+"')";
+                con.query(sql, function (err, result) {
+                    if (err)
+                    {
+                        ToReturn.error.ErrorCode = -1
+                        ToReturn.error.Message = err
+                        throw err
+                    }
+                    callback(ToReturn)
+                });
             }
-        });
-      });
-    return ToReturn
+            else{
+                ToReturn.error.ErrorCode = 13
+                ToReturn.error.Message = "ErrorSQLInjectError : This user already exist in the DB !"
+            }
+            
+        }
+    });
 }
 
 
 module.exports = {
-    GetUserInformation: async function(mail,pass) {
-        await GetUserInformation(mail,pass)
+    GetUserInformation: function(mail,pass,callback) {
+        GetUserInformation(mail,pass,callback)
     },
-    AddUserToDb: function(mail,pass) {
-        AddUserToDb(mail,pass)
+    AddUserToDb: function(mail,pass,token,callback) {
+        AddUserToDb(mail,pass,token,callback)
     }
 }

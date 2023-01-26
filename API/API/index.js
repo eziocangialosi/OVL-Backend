@@ -2,6 +2,14 @@ const express = require('express') // Required for the REST API to work.
 const date = require('./date')
 const mysql = require('./mysql')
 const app = express() // Create the REST API
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+
+const generateToken = (id, password) => {
+    return jwt.sign({ id, password }, 'secret');
+};
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const LISTENING_PORT = 8080
@@ -50,18 +58,17 @@ function HandlePositionActualRequest(req,res) {
     ToReturn.now.posy = 15.56454654 // Setting PosY of the tracker in the object.
     res.status(200).json(ToReturn) // Reply with the json object.
 }
+var callback = function(data) {
+    console.log('got data: '+data);
+    return data
+  };
 
-async function HandleUserInfoRequest(req,res) {
-    let ToReturn = new Object() // Create the return json object.
+function HandleUserInfoRequest(req,res) {
     DebugPrint("Received user information request for "+req.params.mail+" with password : "+req.params.password+".")
-    let data = await mysql.GetUserInformation(req.params.mail,req.params.password)
-    DebugPrint(data)
-    while (data == undefined) {
-        //console.log(data)
-    }
-    ToReturn.error = data.error
-    ToReturn.session_id = data.data // Set the session ID.
-    res.status(200).json(ToReturn) // Reply with the json object.
+    mysql.GetUserInformation(req.params.mail,req.params.password,function(data) {
+    
+    res.status(200).json(data) // Reply with the json object.
+});
 }
 
 function HandleStatusRequest(req,res) {
@@ -78,8 +85,10 @@ function HandleStatusRequest(req,res) {
 function HandleUserAddRequest(req,res) {
     let ToReturn = new Object() // Create the return json object.
     DebugPrint("Received add user request with the following mail and password : "+req.body.mail+" "+req.body.password)
-    ToReturn.error = mysql.AddUserToDb(req.body.mail,req.body.password)
-    res.status(200).json(ToReturn)
+    mysql.AddUserToDb(req.body.mail,req.body.password,generateToken(req.params.mail,req.params.password),function(data) {
+        ToReturn = data
+        res.status(200).json(ToReturn) // Reply with the json object.
+    });
 }
 
 
@@ -91,8 +100,8 @@ app.get('/position/now/:id', (req,res) => { // Endpoint to get the actual positi
     HandlePositionActualRequest(req,res) // Trigger the Position request.
 })
 
-app.get('/user/:mail/:password', async function (req,res) { // Endpoint to get the actual position of a tracker based on his ID.
-    await HandleUserInfoRequest(req,res) // Trigger the user information request handler.
+app.get('/user/:mail/:password', function (req,res) { // Endpoint to get the actual position of a tracker based on his ID.
+    HandleUserInfoRequest(req,res) // Trigger the user information request handler.
 })
 
 app.get('/status/', (req,res) => {
@@ -107,3 +116,81 @@ app.post('/user/', (req,res) => {
 app.listen(LISTENING_PORT, () => {  
     DebugPrint("Server started and ready to respond.")
 })
+
+
+
+// THIS IS THE NO NO ZONE
+
+// List user
+
+app.get('/test/status_list/', (req,res) => {
+    let data_example = new Object()
+    data_example.bat = 97
+    data_example.charge = false
+    data_example.vehiclechg  = false
+    data_example.protection = true
+    data_example.ecomode = true
+    data_example.alarm = false
+    data_example.gps = true
+
+    let data_example2 = new Object()
+    data_example2.bat = 97
+    data_example2.charge = false
+    data_example2.vehiclechg  = false
+    data_example2.protection = true
+    data_example2.ecomode = true
+    data_example2.alarm = false
+    data_example2.gps = true
+
+    let ToReturn = new Object() // Create the return json object.
+    DebugPrint("Received status request.")
+    ToReturn.error = GetErrorJson() // Storing the ErrorJson object template in the ToReturn json object.
+    ToReturn.status_list = new Object() // Create the status json object.
+    ToReturn.status_list[0] = data_example
+    ToReturn.status_list[1] = data_example2
+    ToReturn.status_list[1].bat = 65
+
+    res.status(200).json(ToReturn) // Reply with the json object.
+})
+
+// List IOT
+
+app.get('/test/iot_list/', (req,res) => {
+    let data_example = new Object()
+    data_example.name = 'C15'
+    data_example.id = 01
+    let data_example2 = new Object()
+    data_example2.name = 'Freewind de merde'
+    data_example2.id = 02
+    let ToReturn = new Object() // Create the return json object.
+    DebugPrint("Received status request.")
+    ToReturn.error = GetErrorJson() // Storing the ErrorJson object template in the ToReturn json object.
+    ToReturn.iotArray = new Object() // Create the status json object.
+    ToReturn.iotArray[0] = data_example
+    ToReturn.iotArray[1] = data_example2
+    res.status(200).json(ToReturn) // Reply with the json object.
+
+})
+
+
+// History Pos
+
+app.get('/test/position/history/:id/', (req,res) => {
+    let data_example = new Object()
+    data_example.lat = 56.491491
+    data_example.lon = 98.146514
+    data_example.timestamp = 156546289
+    let data_example2 = new Object()
+    data_example2.lat = 2.491491
+    data_example2.lon = 85.146514
+    data_example2.timestamp = 266546289
+    let ToReturn = new Object() // Create the return json object.
+    DebugPrint("Received status request.")
+    ToReturn.error = GetErrorJson() // Storing the ErrorJson object template in the ToReturn json object.
+    ToReturn.history = new Object() // Create the status json object.
+    ToReturn.history[0] = data_example
+    ToReturn.history[1] = data_example2
+    res.status(200).json(ToReturn) // Reply with the json object.
+
+})
+
