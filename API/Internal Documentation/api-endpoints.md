@@ -1,6 +1,6 @@
 # API Endpoints :
 
-| GET         | /user/{email}{password}                                    |
+| GET         | /user/{email}/{password}                                   |
 | ----------- | ---------------------------------------------------------- |
 | Used to     | Get an api token                                           |
 | Json Output | `{"token": string, "error": {"code": int, "msg": string}}` |
@@ -35,32 +35,32 @@
 | Used to     | Obtain all position history of tracker                                                                     |
 | Json Output | `{"history": [{"lon": float, "lat": float, "timestamp": int},...], "error": {"code": int, "msg": string}}` |
 
-| PUT         | /protection/{id}{state}                        |
+| PUT         | /protection/{id}/{state}                       |
 | ----------- | ---------------------------------------------- |
 | Used to     | (Des)Active parking mode for the tracker       |
 | Json Output | `{"error": {"code": int, "msg": string}}`      |
 
-| PUT         | /sensibility/{id}{diameter}                                |
+| PUT         | /sensibility/{id}/{diameter}                               |
 | ----------- | ---------------------------------------------------------- |
 | Used to     | Update the diameter of the safe zone                       |
 | Json Output | `{"error": {"code": int, "msg": string}}`                  |
 
-| PUT         | /allow_charge/{id}{state}                     |
+| PUT         | /allow_charge/{id}/{state}                    |
 | ----------- | --------------------------------------------- |
 | Used to     | (Des)Active tracker charge on vehicle battery |
 | Json Output | `{"error": {"code": int, "msg": string}}`     |
 
-| PUT         | /eco_mode/{id}{state}                     |
+| PUT         | /eco_mode/{id}/{state}                    |
 | ----------- | ----------------------------------------- |
 | Used to     | (Des)Active tracker energy eco-mode       |
 | Json Output | `{"error": {"code": int, "msg": string}}` |
 
-| PUT         | /allow_charge/{id}{state}                     |
+| PUT         | /allow_charge/{id}/{state}                    |
 | ----------- | --------------------------------------------- |
 | Used to     | (Des)Active tracker charge on vehicle battery |
 | Json Output | `{"error": {"code": int, "msg": string}}`     |
 
-| PUT         | /sub_alarm/{id}{state}                                        |
+| PUT         | /sub_alarm/{id}/{state}                                       |
 | ----------- | ------------------------------------------------------------- |
 | Used to     | (Un)subscribe from tracker alerts (moving, low battery, etc.) |
 | Json Output | `{"error": {"code": int, "msg": string}}`                     |
