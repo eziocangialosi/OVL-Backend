@@ -15,6 +15,7 @@
 | **22**         | `ErrorMQTTChecksumError`      | MQTT Answer got altered, please check system logs.                       | MQTT Response got corrupted, wrong checksum      |
 | **30**         | `ErrorUserWrongCredentials`      | The supplied password is wrong.                       | The supplied password is wrong.      |
 | **31**         | `ErrorUserAlreadyExist`      | The specified mail already exist in the user DB.                       | The specified mail already exist in the user DB.      |
+| **32**         | `ErrorUserNotFound`      | The specified mail is not associated with any account.                       | The specified mail is not associated with any account.      |
 | **90**         | `ErrorAPINotImplemented`      | This API call is not implemented, check your request and try again.      | API Call not implemented                         |
 | **91**         | `ErrorAPIInternalError`       | API Got an internal error, check your request and try again.             | API Got Internal error                           |
 | **92**         | `ErrorAPIWrongCall`           | Wrong args for this API Call                                             | API Got wrong arguments                          |
