@@ -9,7 +9,7 @@ This repository contains all the backend code for the OVL project including :
 - [x] Define API error codes
 - [x] Define data distribution
 - [x] Spend time on diagram
-- [ ] Patch unattended disconnection from the MariaDB Server
+- [x] Patch unattended disconnection from the MariaDB Server
 - [ ] Develop "Dummy" API to test purpose
 - [ ] Link API to Database
 - [ ] Complete API Documentation
