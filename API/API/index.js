@@ -1,25 +1,23 @@
-const express = require('express') // Required for the REST API to work.
-const date = require('./date')
-const mysql = require('./mysql')
-const app = express() // Create the REST API
 const fs = require('fs');
+const path = require('path');
+const https = require('https');
+const express = require('express'); // Required for the REST API to work.
+const date = require('./date')
+const encryption = require('./encryption')
+const mysql = require('./mysql')
 const jwt = require('jsonwebtoken');
+//const salt = bcrypt.genSaltSync(10);
+var bcrypt = require('bcrypt');
 
-const generateToken = (id, password) => {
-    return jwt.sign({ id, password }, 'secret');
-};
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const app = express() // Create the REST API
+const key = fs.readFileSync(path.join(__dirname, 'certificate', 'key.pem'));
+const cert = fs.readFileSync(path.join(__dirname, 'certificate', 'cert.pem'));
+const options = { key, cert };
 const LISTENING_PORT = 8080
 const DEBUG = true
-let ERROR_CODES = new Object()
-ERROR_CODES.ConnectionToIOTUnavailable = -1
-ERROR_CODES.TrackerNotExist = -2
-ERROR_CODES.AccountUnauthorised = -3
-ERROR_CODES.PositionUnavailable = -4
-
+const ERROR_CODES = require('./error_codes').ERROR_CODES;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 function DebugPrint(data) { // THIS DEBUG PRINT.
     if(DEBUG == true)
@@ -58,17 +56,38 @@ function HandlePositionActualRequest(req,res) {
     ToReturn.now.posy = 15.56454654 // Setting PosY of the tracker in the object.
     res.status(200).json(ToReturn) // Reply with the json object.
 }
-var callback = function(data) {
-    console.log('got data: '+data);
-    return data
-  };
 
 function HandleUserInfoRequest(req,res) {
     DebugPrint("Received user information request for "+req.params.mail+" with password : "+req.params.password+".")
-    mysql.GetUserInformation(req.params.mail,req.params.password,function(data) {
-    
-    res.status(200).json(data) // Reply with the json object.
-});
+    mysql.CheckUserCredentials(req.params.mail,function(UserCredentials) {
+        if(UserCredentials.error.Code == 0)
+        {
+            UserCredentials.data.password = UserCredentials.data.password.replace('$2y$', '$2a$');
+            if(bcrypt.compareSync(req.params.password,UserCredentials.data.password))
+            {
+                mysql.GetUserTrackers(UserCredentials.data.id,function(UserTrackers) {
+                    if(UserTrackers.error.Code == 0)
+                    {
+                        res.status(200).json({user : UserCredentials.data.token, trackers : UserTrackers}) // Reply with the json object.
+                    }
+                    else
+                    {
+                        res.status(200).json({user : UserCredentials.data.token, trackers : UserTrackers}) // Reply with the json object.
+                    }
+                });
+            }
+            else
+            {
+                UserCredentials.error = ERROR_CODES.ErrorUserWrongCredentials
+                UserCredentials.data = undefined
+                res.status(200).json(UserCredentials);
+            }  
+        }
+        else
+        {
+            res.status(200).json({error:UserCredentials.error});
+        }
+    });
 }
 
 function HandleStatusRequest(req,res) {
@@ -85,10 +104,14 @@ function HandleStatusRequest(req,res) {
 function HandleUserAddRequest(req,res) {
     let ToReturn = new Object() // Create the return json object.
     DebugPrint("Received add user request with the following mail and password : "+req.body.mail+" "+req.body.password)
-    mysql.AddUserToDb(req.body.mail,req.body.password,generateToken(req.params.mail,req.params.password),function(data) {
-        ToReturn = data
-        res.status(200).json(ToReturn) // Reply with the json object.
-    });
+    encryption.EncryptPassword(req.body.password,function(hash)
+    {
+        mysql.AddUserToDb(req.body.mail,hash,"I need to dev this shit but i dont have very envie",function(data) {
+            ToReturn = data
+            res.status(200).json(ToReturn) // Reply with the json object.
+        });
+    })
+    
 }
 
 
@@ -113,16 +136,12 @@ app.post('/user/', (req,res) => {
     
 })
 
-app.listen(LISTENING_PORT, () => {  
+https.createServer(options, app).listen(LISTENING_PORT, () => {  
     DebugPrint("Server started and ready to respond.")
 })
 
-
-
 // THIS IS THE NO NO ZONE
-
 // List user
-
 app.get('/test/status_list/', (req,res) => {
     let data_example = new Object()
     data_example.bat = 97
@@ -192,5 +211,32 @@ app.get('/test/position/history/:id/', (req,res) => {
     ToReturn.history[1] = data_example2
     res.status(200).json(ToReturn) // Reply with the json object.
 
+})
+
+app.get('/test/users/:email/:password', (req,res) => {
+    ToReturn = new Object();
+    ToReturn.error = GetErrorJson(); // Storing the ErrorJson object template in the ToReturn json object.
+    mysql.CheckUserCredentials(req.params.email,function(data) {
+        if(data.error.Code == 0)
+        {
+            data.data.password = data.data.password.replace('$2y$', '$2a$');
+            if(bcrypt.compareSync(req.params.password,data.data.password))
+            {
+                res.status(200).json(data);
+            }
+            else
+            {
+                data.error = ERROR_CODES.ErrorUserWrongCredentials
+                data.data = undefined
+                res.status(200).json(data);
+            }  
+        }
+        else
+        {
+            ToReturn.error = data.error
+            res.status(200).json(ToReturn); // Reply with the error json object.
+        }
+    });
+    
 })
 
