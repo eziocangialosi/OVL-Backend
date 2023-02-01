@@ -10,7 +10,7 @@
 | Used to     | Get all data related to the tracker                                                                                                 |
 | Json Output | `{"name": string, "topicTX": string, "topicRX": string, "iot_id": int, "mqtt_pswd": string, "error": {"code": int, "msg": string}}` |
 
-| GET         | /iot_list                                                                                  |
+| GET         | /iot_list/{token}                                                                                  |
 |-------------|--------------------------------------------------------------------------------------------|
 | Used to     | Get all the tracker list for the user                                                      |
 | Json Output | `{"iotArray": [{"name": string, "id": int},...], "error": {"code" : int, "msg" : string}}` |
