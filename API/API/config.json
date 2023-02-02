@@ -1,0 +1,16 @@
+{
+    "Debug": true,
+    "Certificate": {
+        "Certificate_folder" : "certificate",
+        "Key" : "key.pem",
+        "Cert" : "cert.pem"
+    },
+    "Server_Port" : 8080,
+    "Database_Config" : {
+        "host" : "192.168.1.18",
+        "user" : "root",
+        "password" : "Pornhub",
+        "database" : "Test"
+    }
+   
+}

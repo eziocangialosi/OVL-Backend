@@ -63,6 +63,10 @@ const ERROR_CODES = {
         Message : "The specified user don't have any tracker.",
         Code : 33,
     },
+    ErrorUserTokenIsInvalid : {
+        Message : "The specified token is invalid.",
+        Code : 34,
+    },
     ErrorAPINotImplemented : {
         Message : "This API call is not implemented, check your request and try again.",
         Code : 90,
