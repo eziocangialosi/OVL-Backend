@@ -1,0 +1,1 @@
+npm i express mysql bcrypt cors mqtt nodemon
