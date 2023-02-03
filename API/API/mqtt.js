@@ -36,7 +36,7 @@ client.on('message', function (topic, message) {
         TrackerPosition = {
             lon: message.toString().split(',')[0].split('=')[1],
             lat: message.toString().split(',')[1].split('='),
-        } 
+        }
         client.publish('RX', 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("POS-ERR")) { // Position error for the tracker.
@@ -47,7 +47,6 @@ client.on('message', function (topic, message) {
     }
     //client.end()
 })
-
 
 function RequestTrackerStatus() {
     client.publish('RX', 'STS-RQ')
