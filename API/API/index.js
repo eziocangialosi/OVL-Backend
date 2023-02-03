@@ -16,17 +16,17 @@ const ERROR_CODES = require('./error_codes').ERROR_CODES;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: "*",
-    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
+    origin: "*", // Allow Redirection for mobile Apps.
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'] // Allow all of this methods to all API endpoints.
 }));
 
-function DebugPrint(data) { // THIS DEBUG PRINT.
+function DebugPrint(data) { // This function print data if config.Debug is set to true.
     if (config.Debug == true) {
         console.log("[" + date.GetDate() + "] [" + date.GetTime() + "] -> " + data)
     }
 }
 
-function HandlePositionActualRequest(req, res) {
+function HandlePositionActualRequest(req, res) { // [DUMMY]
     let ToReturn = new Object() // Create the return json object.
     DebugPrint("Received actual position request for " + req.params.id + ".")
     ToReturn.error = ERROR_CODES.ErrorOK // Storing the ErrorJson ocject template in the ToReturn json object.
@@ -36,7 +36,7 @@ function HandlePositionActualRequest(req, res) {
     res.status(200).json(ToReturn) // Reply with the json object.
 }
 
-function HandleGetUserTrackers(req, res) { // Return tracker list of a user from his token
+function HandleGetUserTrackers(req, res) { // Return tracker list of a user from his token [DONE]
     mysql.GetUserInformation(req.params.token, function (User) {
         if (User.error.Code == 0) {
             mysql.GetUserTrackers(User.id, function (UserTrackers) {
@@ -55,13 +55,13 @@ function HandleGetUserTrackers(req, res) { // Return tracker list of a user from
     })
 }
 
-function HandleUserInfoRequest(req, res) { // Return User info if mail and password good.
+function HandleUserInfoRequest(req, res) { // Return User info if mail and password good. [DONE]
     DebugPrint("Received user information request for " + req.params.mail + " with password : " + req.params.password + ".")
     mysql.CheckUserCredentials(req.params.mail, function (UserCredentials) {
         if (UserCredentials.error.Code == 0) {
             UserCredentials.data.password = UserCredentials.data.password.replace('$2y$', '$2a$');
             if (bcrypt.compareSync(req.params.password, UserCredentials.data.password)) {
-                res.status(200).json({ user: UserCredentials.data.token }) // Reply with the json object.
+                res.status(200).json({error: ERROR_CODES.ErrorOK, user: UserCredentials.data.token}) // Reply with the json object.
             }
             else {
                 UserCredentials.error = ERROR_CODES.ErrorUserWrongCredentials
@@ -75,7 +75,7 @@ function HandleUserInfoRequest(req, res) { // Return User info if mail and passw
     });
 }
 
-function HandleStatusRequest(req, res) { // DUMMY
+function HandleStatusRequest(req, res) { // [DUMMY]
     let ToReturn = new Object() // Create the return json object.
     DebugPrint("Received status request.")
     ToReturn.error = ERROR_CODES.ErrorOK // Storing the ErrorJson object template in the ToReturn json object.
@@ -109,7 +109,7 @@ function HandleGetTrackerPositionHistory(req, res) { // Return tracker position 
     })
 }
 
-function HandlerGetStatusList(req, res) {
+function HandlerGetStatusList(req, res) { // Return all status from all trackers linked to a token [DONE]
     mysql.GetTrackersStatusList(req.params.token, function (data) {
         if (data.error.Code == 0) {
             res.status(200).json({ error: ERROR_CODES.ErrorOK, status_list: data.status_list })
@@ -120,7 +120,7 @@ function HandlerGetStatusList(req, res) {
     })
 }
 
-function HandlerSetStatus(req, res) {
+function HandlerSetStatus(req, res) { // Set a tracker status [TODO]
     mysql.SetTrackerStatus(req.body.id_iot, req.body.status_charge, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
         if (data.error.Code == 0) {
             res.status(200).json({ error: ERROR_CODES.ErrorOK })
