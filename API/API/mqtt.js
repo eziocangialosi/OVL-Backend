@@ -42,10 +42,9 @@ client.on('message', function (topic, message) {
     else if (message.toString().startsWith("POS-ERR")) { // Position error for the tracker.
         client.publish('RX', 'POS-ACK') // Respond to the message.
     }
-    
-
-
-
+    else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
+        client.publish('RX', 'ALM-ACK') // Respond to the message.
+    }
     //client.end()
 })
 
