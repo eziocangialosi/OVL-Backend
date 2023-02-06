@@ -2,9 +2,9 @@ const mqtt = require('mqtt')
 const client = mqtt.connect('mqtt://ovl.tech-user.fr:6868')
 
 client.on('connect', function () {
-    client.subscribe('test', function (err) {
+    client.subscribe('TX', function (err) {
         if (!err) {
-            client.publish('test', '[TEST SERVER CONNECTION] OK')
+            client.publish('TX', '[TEST SERVER CONNECTION] OK')
         }
         else {
             console.error("[TEST SERVER CONNECTION] Error in MQTT connection !")
@@ -17,16 +17,17 @@ client.on('message', function (topic, message) {
     if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish('RX', 'SYN-ACK') // Respond to the message.
     }
-    else if (message.toString().startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker.
+    else if (message.toString().startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker. mosquitto_pub -h ovl.tech-user.fr -p 6868 -t TX -m "STS=bat,charge,veh_chg,eco-mode,protection,alarm,gps"
         TrackerStatus = {
-            bat: message.toString().split(',')[0].split('=')[1],
-            charge: message.toString().split(',')[1].split(',')[1],
-            veh_chg: message.toString().split(',')[2].split(',')[1],
-            eco_mode: message.toString().split(',')[3].split(',')[1],
-            protection: message.toString().split(',')[4].split(',')[1],
-            alarm: message.toString().split(',')[5].split(',')[1],
+            bat: message.toString().split('=')[1].split(',')[0],
+            charge: message.toString().split(',')[1].split(',')[0],
+            veh_chg: message.toString().split(',')[2].split(',')[0],
+            eco_mode: message.toString().split(',')[3].split(',')[0],
+            protection: message.toString().split(',')[4].split(',')[0],
+            alarm: message.toString().split(',')[5].split(',')[0],
             gps: message.toString().split(',')[6],
         }
+        console.log(TrackerStatus)
         client.publish('RX', 'STS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("PING")) { // Ping request from Tracker.
