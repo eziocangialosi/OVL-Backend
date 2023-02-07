@@ -2,7 +2,7 @@ var mysql = require('mysql'); // Required for the REST API to work.
 const { ERROR_CODES } = require('./error_codes');
 const config = require('./config.json')
 var con = mysql.createConnection(config.Database_Config);
-
+const date = require('./date')
 function handleDisconnect() { // This thing reconnect the database.
     con = mysql.createConnection(config.Database_Config);
     con.connect(function onConnect(err) {   // The server is either down
@@ -162,6 +162,91 @@ function AddUserToDb(mail, password, token, callback) {
     });
 }
 
+function AddTrackerToUser(token, tracker, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    var UserId = 0
+    var TrackerId = 0
+    con.query("SELECT id FROM users WHERE token='" + token + "'", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] != undefined) {
+                UserId = result[0].id
+                con.query("SELECT COUNT(id) AS ID FROM CredentialsTracker", (err, result) => {
+                    if (err) {
+                        console.error(err)
+                        ToReturn.error = err
+                    }
+                    else {
+                        TrackerId = result[0].ID+1
+                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + tracker + "', '" + "password" + "', 'topicRX_" +TrackerId +"', 'topicTX_" +TrackerId +"','"+UserId+"')", function (err, result) {
+                            if (err) {
+                                console.error(err)
+                                ToReturn.error = err
+                            }
+                            else {
+                                con.query("INSERT INTO Status_IOT (id_iot,timestamp) VALUES ('" + TrackerId + "', '"+date.GetTimestamp() +"')", function (err, result) {
+                                    if (err) {
+                                        console.error(err)
+                                        ToReturn.error = err
+                                    }
+                                    else {
+                                        ToReturn.Topics = {
+                                            RX: "topicRX_" +TrackerId,
+                                            TX: "topicTX_" +TrackerId,
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                })
+            }
+            else {
+                    ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid
+                }
+            }
+            callback(ToReturn)
+        });
+}
+
+// AddTrackerToUser("MonGrosTokenDeMerde","Test N°QuaranteDouze", function(data) {
+//     console.log(data)
+// })
+
+
+function UpdateTrackerStatus(status, topic, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("SELECT id FROM CredentialsTracker WHERE TopicTX='" + topic + "'", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] != undefined) {
+                con.query("UPDATE Status_IOT SET status_charge = '" + status.charge + "',status_bat = '" + status.bat + "',status_alarm = '" + status.alarm + "',status_online = '" + 1 + "',status_ecomode = '" + status.eco_mode + "',status_protection = '" + status.protection + "',status_vh_charge = '" + status.veh_chg + "',status_gps = '" + status.gps + "' WHERE id_iot='" + result[0].id + "'", (err, result) => {
+                    if (err) {
+                        console.error(err)
+                        ToReturn.error = err
+                    }
+                    callback(ToReturn);
+                });
+            }
+
+            else {
+                ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+            }
+            console.log(result)
+        }
+        callback(ToReturn)
+    });
+}
+
+
 module.exports = {
     GetUserInformation: function (token, callback) {
         GetUserInformation(token, callback)
@@ -183,5 +268,11 @@ module.exports = {
     },
     SetTrackerStatus: function (id_iot, status_charge, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
         SetTrackerStatus(id_iot, status_charge, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback)
+    },
+    UpdateTrackerStatus: function (status, topic, callback) {
+        UpdateTrackerStatus(status, topic, callback)
+    },
+    AddTrackerToUser: function(token, tracker, callback) {
+        AddTrackerToUser(token, tracker, callback)
     },
 }

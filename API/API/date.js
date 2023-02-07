@@ -13,5 +13,8 @@ module.exports = {
         let minutes = date_ob.getMinutes();
         let seconds = date_ob.getSeconds();
         return (hours + ":" + minutes + ":" + seconds)
+    },
+    GetTimestamp: function() {
+        return Date.now();
     }
 }

@@ -1,4 +1,5 @@
 const mqtt = require('mqtt')
+const mysql = require('./mysql')
 const client = mqtt.connect('mqtt://ovl.tech-user.fr:6868')
 
 client.on('connect', function () {
@@ -27,7 +28,10 @@ client.on('message', function (topic, message) {
             alarm: message.toString().split(',')[5].split(',')[0],
             gps: message.toString().split(',')[6],
         }
-        console.log(TrackerStatus)
+        mysql.UpdateTrackerStatus(TrackerStatus,topic,function(data)
+        {
+            console.log(data)
+        })
         client.publish('RX', 'STS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("PING")) { // Ping request from Tracker.

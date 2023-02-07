@@ -49,7 +49,6 @@ function HandleGetUserTrackers(req, res) { // Return tracker list of a user from
             });
         }
         else {
-
             res.status(200).json({ error: User.error }) // Reply with the json object.
         }
     })
@@ -131,6 +130,12 @@ function HandlerSetStatus(req, res) { // Set a tracker status [TODO]
     })
 }
 
+function HandleTrackerAddRequest(req,res) { // Add a tracker to a user based on his token.
+    mysql.AddTrackerToUser(req.body.token,req.body.name, function(data) {
+        res.status(200).json(data) // Reply with the json object.
+    })
+}
+
 const Server = https.createServer({ key, cert }, app).listen(config.Server_Port, () => { // Create secure HTTPS REST API
     DebugPrint("Server started and ready to respond.")
 })
@@ -149,8 +154,12 @@ app.get('/status/', (req, res) => { // Get Status
 
 app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
     HandleUserAddRequest(req, res)
-
 })
+
+app.post('/iot/', (req, res) => { // Endpoint to add a user. [DONE]
+    HandleTrackerAddRequest(req, res)
+})
+
 app.get('/iot_list/:token/', (req, res) => { // Endpoint used to get the list of trackers from a user token. [DONE]
     HandleGetUserTrackers(req, res);
 })
