@@ -74,15 +74,10 @@ function HandleUserInfoRequest(req, res) { // Return User info if mail and passw
     });
 }
 
-function HandleStatusRequest(req, res) { // [DUMMY]
-    let ToReturn = new Object() // Create the return json object.
-    DebugPrint("Received status request.")
-    ToReturn.error = ERROR_CODES.ErrorOK // Storing the ErrorJson object template in the ToReturn json object.
-    ToReturn.status = new Object() // Create the status json object.
-    ToReturn.status.errors = 0
-    ToReturn.status.battery_state = 100
-    ToReturn.status.alarm = false
-    res.status(200).json(ToReturn) // Reply with the json object.
+function HandleStatusRequest(req, res) { //
+    mqtt.RequestTrackerStatus(req.params.id_iot,function(data) {
+        res.status(200).json(data) // Reply with the json object.
+    })
 }
 
 function HandleUserAddRequest(req, res) { // Add user to DB if it dosen't exist.
@@ -148,7 +143,7 @@ app.get('/user/:mail/:password', function (req, res) { // Endpoint to get the to
     HandleUserInfoRequest(req, res)
 })
 
-app.get('/status/', (req, res) => { // Get Status
+app.get('/status/:id_iot/', (req, res) => { // Get Status
     HandleStatusRequest(req, res)
 })
 

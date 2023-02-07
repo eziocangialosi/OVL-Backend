@@ -63,7 +63,8 @@ client.on('message', function (topic, message) {
             gps: message.toString().split(',')[6],
         }
         for(let i = 0; i < GlobalTrackerList.length; i++) {
-            if(GlobalTrackerList[i].topic == id) {
+            if(GlobalTrackerList[i].topicRX == topic) {
+                GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].status = TrackerStatus
                 break
             }
@@ -109,6 +110,7 @@ client.on('message', function (topic, message) {
 })
 
 function RequestTrackerStatus(id,callback) {
+    debug.Print(id)
     var Tracker
     var OldTimestamp
     ToReturn = new Object()
