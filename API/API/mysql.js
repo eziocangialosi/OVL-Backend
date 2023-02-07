@@ -162,12 +162,12 @@ function AddUserToDb(mail, password, token, callback) {
     });
 }
 
-function AddTrackerToUser(token, tracker, callback) {
+function AddTrackerToUser(token, tracker, callback) { // Used to add a new tracker in the following tables : CredentialsTracker, Status_IOT.
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     var UserId = 0
     var TrackerId = 0
-    con.query("SELECT id FROM users WHERE token='" + token + "'", (err, result) => {
+    con.query("SELECT id FROM users WHERE token='" + token + "'", (err, result) => { // We get the user id from his token.
         if (err) {
             console.error(err)
             ToReturn.error = err
@@ -175,25 +175,25 @@ function AddTrackerToUser(token, tracker, callback) {
         else {
             if (result[0] != undefined) {
                 UserId = result[0].id
-                con.query("SELECT COUNT(id) AS ID FROM CredentialsTracker", (err, result) => {
+                con.query("SELECT COUNT(id) AS ID FROM CredentialsTracker", (err, result) => { // We get the tracker id used in the topic suffix.
                     if (err) {
                         console.error(err)
                         ToReturn.error = err
                     }
-                    else {
-                        TrackerId = result[0].ID+1
+                    else { // If nothing fail.
+                        TrackerId = result[0].ID+1 // As the result only count the existing entries we add 1.
                         con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + tracker + "', '" + "password" + "', 'topicRX_" +TrackerId +"', 'topicTX_" +TrackerId +"','"+UserId+"')", function (err, result) {
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
                             }
-                            else {
+                            else { // If nothing fail.
                                 con.query("INSERT INTO Status_IOT (id_iot,timestamp) VALUES ('" + TrackerId + "', '"+date.GetTimestamp() +"')", function (err, result) {
                                     if (err) {
                                         console.error(err)
                                         ToReturn.error = err
                                     }
-                                    else {
+                                    else { // If nothing have failed we return the two topics of the tracker.
                                         ToReturn.Topics = {
                                             RX: "topicRX_" +TrackerId,
                                             TX: "topicTX_" +TrackerId,
@@ -206,7 +206,7 @@ function AddTrackerToUser(token, tracker, callback) {
                 })
             }
             else {
-                    ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid
+                    ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid // The provided token seams to be wrong so we return the error code.
                 }
             }
             callback(ToReturn)
