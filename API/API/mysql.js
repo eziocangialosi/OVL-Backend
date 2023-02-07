@@ -1,4 +1,6 @@
 var mysql = require('mysql'); // Required for the REST API to work.
+const debug = require('./debug')
+
 const { ERROR_CODES } = require('./error_codes');
 const config = require('./config.json')
 var con = mysql.createConnection(config.Database_Config);
@@ -11,7 +13,7 @@ function handleDisconnect() { // This thing reconnect the database.
             setTimeout(handleDisconnect, 10000);    // We introduce a delay before attempting to reconnect,
         }                                           // to avoid a hot loop, and to allow our node script to
     });                                             // process asynchronous requests in the meantime.
-    // If you're also serving http, display a 503 error.
+    // display a 503 error.
     con.on('error', function onError(err) {
         console.error('db error', err);
         if (err.code == 'PROTOCOL_CONNECTION_LOST') {   // Connection to the MySQL server is usually
@@ -213,15 +215,10 @@ function AddTrackerToUser(token, tracker, callback) { // Used to add a new track
         });
 }
 
-// AddTrackerToUser("MonGrosTokenDeMerde","Test N°QuaranteDouze", function(data) {
-//     console.log(data)
-// })
-
-
 function UpdateTrackerStatus(status, topic, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
-    con.query("SELECT id FROM CredentialsTracker WHERE TopicTX='" + topic + "'", (err, result) => {
+    con.query("SELECT id FROM CredentialsTracker WHERE TopicRX='" + topic + "'", (err, result) => {
         if (err) {
             console.error(err)
             ToReturn.error = err
@@ -240,14 +237,36 @@ function UpdateTrackerStatus(status, topic, callback) {
             else {
                 ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
             }
-            console.log(result)
+            debug.Print(result)
         }
         callback(ToReturn)
     });
 }
 
 
-module.exports = {
+function GetAllTrackersTopics(callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("SELECT * FROM CredentialsTracker", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] != undefined) {
+               ToReturn.trackers = result
+            }
+
+            else {
+                ToReturn.error = ERROR_CODES.ErrorUserHasNoTracker
+            }
+            debug.Print(result)
+        }
+        callback(ToReturn)
+    });
+}
+
+module.exports = { // Export funtion for other file to use it.
     GetUserInformation: function (token, callback) {
         GetUserInformation(token, callback)
     },
@@ -274,5 +293,8 @@ module.exports = {
     },
     AddTrackerToUser: function(token, tracker, callback) {
         AddTrackerToUser(token, tracker, callback)
+    },
+    GetAllTrackersTopics: function(callback) {
+        GetAllTrackersTopics(callback)
     },
 }
