@@ -14,6 +14,6 @@ This repository contains all the backend code for the OVL project including :
 - [X] Patch unattended disconnection from the MariaDB Server
 - [ ] Make MQTT frame handlers
 - [ ] Make MQTT frame sender
-- [ ] Develop "Dummy" API to test purpose
-- [ ] Link API to Database
+- [X] Develop "Dummy" API to test purpose
+- [X] Link API to Database
 - [ ] Complete API Documentation
