@@ -1,6 +1,5 @@
 var mysql = require('mysql'); // Required for the REST API to work.
 const debug = require('./debug')
-
 const { ERROR_CODES } = require('./error_codes');
 const config = require('./config.json')
 var con = mysql.createConnection(config.Database_Config);
@@ -242,7 +241,6 @@ function UpdateTrackerStatus(status, topic, callback) {
         callback(ToReturn)
     });
 }
-
 
 function GetAllTrackersTopics(callback) {
     ToReturn = new Object();

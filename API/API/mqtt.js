@@ -16,6 +16,7 @@ client.on('connect', function () {
                     topicRX: data.trackers[i].topicRX,
                     topicTX: data.trackers[i].topicTX,
                     pos: {},
+                    status: {},
                     timestamp: 0,
                 }
                 client.subscribe(data.trackers[i].topicTX, function (err) {
@@ -61,6 +62,12 @@ client.on('message', function (topic, message) {
             alarm: message.toString().split(',')[5].split(',')[0],
             gps: message.toString().split(',')[6],
         }
+        for(let i = 0; i < GlobalTrackerList.length; i++) {
+            if(GlobalTrackerList[i].topic == id) {
+                GlobalTrackerList[i].status = TrackerStatus
+                break
+            }
+        }
         mysql.UpdateTrackerStatus(TrackerStatus,topic,function(data)
         {
             if(data.error == ERROR_CODES.ErrorOK) {
@@ -101,12 +108,52 @@ client.on('message', function (topic, message) {
     }
 })
 
-function RequestTrackerStatus() {
-    client.publish(topic, 'STS-RQ')
+function RequestTrackerStatus(id,callback) {
+    var Tracker
+    var OldTimestamp
+    ToReturn = new Object()
+    ToReturn.error = ERROR_CODES.ErrorOK
+    for(let i = 0; i < GlobalTrackerList.length; i++) {
+        if(GlobalTrackerList[i].id == id) {
+            Tracker = i
+            OldTimestamp = GlobalTrackerList[i].timestamp
+            client.publish(GlobalTrackerList[i].topicRX, 'STS-RQ')
+            break
+        }
+    }
+    setTimeout(() => { // Wait 5s for tracker to respond.
+        if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+            ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+        }
+        else {
+            ToReturn.position = GlobalTrackerList[Tracker].status
+        }
+        callback(ToReturn)
+    }, 5000);
 }
 
-function PingTracker() {
-    client.publish(topic, 'PING')
+function PingTracker(id,callback) {
+    var Tracker
+    var OldTimestamp
+    ToReturn = new Object()
+    ToReturn.error = ERROR_CODES.ErrorOK
+    for(let i = 0; i < GlobalTrackerList.length; i++) {
+        if(GlobalTrackerList[i].id == id) {
+            Tracker = i
+            OldTimestamp = GlobalTrackerList[i].timestamp
+            client.publish(GlobalTrackerList[i].topicRX, 'PING')
+            break
+        }
+    }
+    setTimeout(() => { // Wait 5s for tracker to respond.
+        if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+            ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+        }
+        else {
+            ToReturn.position = GlobalTrackerList[Tracker].pos
+        }
+        callback(ToReturn)
+    }, 5000);
 }
 
 function RequestTrackerPosition(id,callback) {
@@ -127,7 +174,7 @@ function RequestTrackerPosition(id,callback) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         }
         else {
-            ToReturn.tracker = GlobalTrackerList[Tracker]
+            ToReturn.position = GlobalTrackerList[Tracker].pos
         }
         callback(ToReturn)
     }, 5000);
@@ -136,5 +183,8 @@ function RequestTrackerPosition(id,callback) {
 module.exports = {
     RequestTrackerPosition: function(id,callback) {
         RequestTrackerPosition(id,callback)
+    },
+    RequestTrackerStatus: function (id,callback) {
+        RequestTrackerStatus(id,callback)
     }
 }
