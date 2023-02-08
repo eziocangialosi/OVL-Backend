@@ -110,7 +110,6 @@ client.on('message', function (topic, message) {
 })
 
 function RequestTrackerStatus(id,callback) {
-    debug.Print(id)
     var Tracker
     var OldTimestamp
     ToReturn = new Object()

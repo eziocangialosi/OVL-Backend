@@ -1,6 +1,6 @@
 const ERROR_CODES = {
     ErrorOK: {
-        Message: "Nothing goes wong.",
+        Message: "Nothing goes wrong.",
         Code: 0,
     },
     ErrorUnknownError: {
