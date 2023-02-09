@@ -30,6 +30,7 @@ client.on('connect', function () {
             }
             setTimeout(() => {
                 CheckTrackersPingResponse()
+                DEBUG()
             }, 5000);
         }
     })
@@ -61,7 +62,6 @@ client.on('message', function (topic, message) {
         })
     }
     else if (message.toString().startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker. mosquitto_pub -h ovl.tech-user.fr -p 6868 -t TX -m "STS=bat,charge,veh_chg,eco-mode,protection,alarm,gps"
-        debug.Print(topic)
         TrackerStatus = {
             bat: message.toString().split('=')[1].split(',')[0],
             charge: message.toString().split(',')[1].split(',')[0],
@@ -78,12 +78,8 @@ client.on('message', function (topic, message) {
                 break
             }
         }
-        debug.Print("About to do SQL shit")
         mysql.UpdateTrackerStatus(TrackerStatus, topic, function (data) {
-            debug.Print("In SQL shit")
             if (data.error == ERROR_CODES.ErrorOK) { // If nothing broke.
-                
-                debug.Print("Publishing STS-ACK")
                 client.publish(topic, 'STS-ACK') // Respond to the message.
             }
         })
@@ -122,7 +118,7 @@ client.on('message', function (topic, message) {
 })
 
 function RequestTrackerStatus(id, callback) {
-    var Tracker
+    var Tracker = undefined
     var OldTimestamp
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -218,6 +214,13 @@ module.exports = {
 }
 
 
-RequestTrackerStatus(3, function (data) {
-    console.log(data)
-})
+
+
+
+
+
+function DEBUG() {
+    RequestTrackerStatus(3, function (data) {
+        console.log(data)
+    })
+}

@@ -272,7 +272,6 @@ function UpdateTrackerStatus(status, topic, callback) {
                     }
                 });
             }
-
             else {
                 ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
             }
