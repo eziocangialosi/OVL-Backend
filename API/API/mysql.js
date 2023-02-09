@@ -303,14 +303,28 @@ function GetAllTrackersTopics(callback) {
 }
 
 
-function AddPositionOfTrackerToDb(pos,id,date,callback) {
+function AddPositionOfTrackerToDb(pos, id, date, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
     var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
     con.query(sql, function (err, result) {
         if (err) {
             ToReturn.error = ERROR_CODES.ErrorSQLInjectError
             throw err
         }
+        else {
+            sql = "DELETE FROM Pos_IOT WHERE ROWID IN (SELECT ROWID FROM Pos_IOT ORDER BY ROWID DESC LIMIT -1 OFFSET 20)";
+            con.query(sql, function (err, result) {
+                if (err) {
+                    ToReturn.error = ERROR_CODES.ErrorSQLInjectError
+                    throw err
+                }
+            });
+        }
     });
+
+
+
 }
 
 module.exports = { // Export funtion for other file to use it.
@@ -349,5 +363,8 @@ module.exports = { // Export funtion for other file to use it.
     },
     GetTrackerStatus: function (topic, callback) {
         GetTrackerStatus(topic, callback)
+    },
+    AddPositionOfTrackerToDb: function (pos, id, date, callback) {
+        AddPositionOfTrackerToDb(pos, id, date, callback)
     }
 }

@@ -105,11 +105,8 @@ client.on('message', function (topic, message) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].pos = TrackerPosition
                 mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  date.GetTimestamp(), function(data) {
-                    
+
                 })
-                
-
-
                 break
             }
         }
