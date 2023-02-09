@@ -149,7 +149,7 @@ function GetTrackerLastPosition(id_iot, callback) {
 function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
-    con.query("UPDATE Status_IOT SET status_charge = '" + status_charge + "',status_alarm = '" + status_alarm + "',status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
+    con.query("UPDATE Status_IOT SET status_alarm = '"+ status_alarm + "',status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
         if (err) {
             console.error(err)
             ToReturn.error = err
