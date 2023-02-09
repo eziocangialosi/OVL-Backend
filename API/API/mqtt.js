@@ -136,7 +136,7 @@ function RequestTrackerStatus(id,callback) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         }
         else {
-            ToReturn.position = GlobalTrackerList[Tracker].status
+            ToReturn.status = GlobalTrackerList[Tracker].status
         }
         callback(ToReturn)
     }, 5000);
