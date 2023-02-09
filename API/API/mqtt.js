@@ -97,8 +97,8 @@ client.on('message', function (topic, message) {
     }
     else if (message.toString().startsWith("POS=")) { // Position of the tracker.
         TrackerPosition = {
-            lon: message.toString().split('=')[1].split(',')[0],
-            lat: message.toString().split(',')[1],
+            lat: message.toString().split('=')[1].split(',')[0],
+            lon: message.toString().split(',')[1],
         }
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
@@ -201,7 +201,6 @@ function RequestTrackerPosition(id, callback) {
             }
         }, 5000);
     }
-
 }
 
 module.exports = {

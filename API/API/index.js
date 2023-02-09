@@ -141,12 +141,16 @@ app.get('/iot_list/:token/', (req, res) => { // Endpoint used to get the list of
     HandleGetUserTrackers(req, res);
 })
 
-app.get('/test/position/history/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
-    HandleGetTrackerPositionHistory(req, res)
+app.get('/status_list/:token/', (req, res) => { // Return a user tracker list.
+    HandlerGetStatusList(req, res)
 })
 
-app.get('/test/status_list/:token/', (req, res) => { // Return a user tracker list.
-    HandlerGetStatusList(req, res)
+app.get('/position/now/:id', (req, res) => { // Endpoint to get the actual position of a tracker based on his ID. [TODO]
+    HandlePositionActualRequest(req, res) // Trigger the Position request.
+})
+
+app.get('/position/history/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
+    HandleGetTrackerPositionHistory(req, res)
 })
 
 app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
@@ -171,11 +175,7 @@ app.put('/set/status/', (res, req) => { // Endpoint used to set tracker status. 
 ########################################################################################################################
 */
 
-app.get('/position/now/:id', (req, res) => { // Endpoint to get the actual position of a tracker based on his ID. [TODO]
-    HandlePositionActualRequest(req, res) // Trigger the Position request.
-})
-
-app.get('/test/users/:email/:password', (req, res) => {
+app.get('/users/:email/:password', (req, res) => {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK; // Storing the ErrorJson object template in the ToReturn json object.
     mysql.CheckUserCredentials(req.params.email, function (data) {
