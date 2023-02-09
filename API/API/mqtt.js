@@ -7,9 +7,9 @@ const debug = require('./debug')
 
 var GlobalTrackerList = new Array();
 client.on('connect', function () {
-    mysql.GetAllTrackersTopics(function(data) {
-        if(data.error == ERROR_CODES.ErrorOK) {
-            for(let i = 0; i < data.trackers.length; i++) {
+    mysql.GetAllTrackersTopics(function (data) {
+        if (data.error == ERROR_CODES.ErrorOK) {
+            for (let i = 0; i < data.trackers.length; i++) {
                 GlobalTrackerList[i] = {
                     id: data.trackers[i].id,
                     name: data.trackers[i].trackerName,
@@ -24,7 +24,7 @@ client.on('connect', function () {
                         client.publish(data.trackers[i].topicRX, 'PING')
                     }
                     else {
-                        console.error("[TEST SERVER CONNECTION] Error in MQTT connection for topic ["+data.trackers[i].topicTX+"] !")
+                        console.error("[TEST SERVER CONNECTION] Error in MQTT connection for topic [" + data.trackers[i].topicTX + "] !")
                     }
                 })
             }
@@ -35,32 +35,33 @@ client.on('connect', function () {
     })
 })
 
-function CheckTrackersPingResponse()
-{
+function CheckTrackersPingResponse() {
     var OfflineDevices = 0
-    for(let i = 0; i < GlobalTrackerList.length; i++) {
-        if(GlobalTrackerList[i].timestamp == 0) {
-            OfflineDevices ++
+    for (let i = 0; i < GlobalTrackerList.length; i++) {
+        if (GlobalTrackerList[i].timestamp == 0) {
+            OfflineDevices++
         }
     }
-    debug.Print("Init loop finished "+OfflineDevices+" offline devices on "+GlobalTrackerList.length+" devices.")
+    debug.Print("Init loop finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
 }
 
 client.on('message', function (topic, message) {
-    debug.Print("Received MQTT message : "+message.toString())
-    topic = topic.replace('TX','RX') // Replace topic type to respond on other topic.
+    debug.Print("Received MQTT message : " + message.toString())
+    topic = topic.replace('TX', 'RX') // Replace topic type to respond on other topic.
     if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish(topic, 'SYN-ACK') // Respond to the message.
     }
-    else if(message.toString().startsWith("STG-RQ")) {
-        mysql.GetTrackerStatus(topic,function(data) {
+    else if (message.toString().startsWith("POS-ERR")) {
+    }
+    else if (message.toString().startsWith("STG-RQ")) {
+        mysql.GetTrackerStatus(topic, function (data) {
             //var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+",15.0"
-            var to_send = "STG="+1+","+0+","+0+",15"
-            debug.Print(to_send)
+            var to_send = "STG=" + 1 + "," + 0 + "," + 0 + ",15"
             client.publish(topic, to_send)
         })
     }
     else if (message.toString().startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker. mosquitto_pub -h ovl.tech-user.fr -p 6868 -t TX -m "STS=bat,charge,veh_chg,eco-mode,protection,alarm,gps"
+        debug.Print(topic)
         TrackerStatus = {
             bat: message.toString().split('=')[1].split(',')[0],
             charge: message.toString().split(',')[1].split(',')[0],
@@ -70,16 +71,19 @@ client.on('message', function (topic, message) {
             alarm: message.toString().split(',')[5].split(',')[0],
             gps: message.toString().split(',')[6],
         }
-        for(let i = 0; i < GlobalTrackerList.length; i++) {
-            if(GlobalTrackerList[i].topicRX == topic) {
+        for (let i = 0; i < GlobalTrackerList.length; i++) {
+            if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].status = TrackerStatus
                 break
             }
         }
-        mysql.UpdateTrackerStatus(TrackerStatus,topic,function(data)
-        {
-            if(data.error == ERROR_CODES.ErrorOK) { // If nothing broke.
+        debug.Print("About to do SQL shit")
+        mysql.UpdateTrackerStatus(TrackerStatus, topic, function (data) {
+            debug.Print("In SQL shit")
+            if (data.error == ERROR_CODES.ErrorOK) { // If nothing broke.
+                
+                debug.Print("Publishing STS-ACK")
                 client.publish(topic, 'STS-ACK') // Respond to the message.
             }
         })
@@ -88,8 +92,8 @@ client.on('message', function (topic, message) {
         client.publish(topic, 'PONG') // Respond to the message.
     }
     else if (message.toString().startsWith("PONG")) { // Ping request from Tracker.
-        for(let i = 0; i < GlobalTrackerList.length; i++) {
-            if(GlobalTrackerList[i].topicRX == topic) {
+        for (let i = 0; i < GlobalTrackerList.length; i++) {
+            if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 break
             }
@@ -100,14 +104,13 @@ client.on('message', function (topic, message) {
             lon: message.toString().split('=')[1].split(',')[0],
             lat: message.toString().split(',')[1],
         }
-        for(let i = 0; i < GlobalTrackerList.length; i++) {
-            if(GlobalTrackerList[i].topicRX == topic) {
+        for (let i = 0; i < GlobalTrackerList.length; i++) {
+            if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].pos = TrackerPosition
                 break
             }
         }
-        console.log(TrackerPosition)
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("POS-ERR")) { // Position error for the tracker.
@@ -118,37 +121,43 @@ client.on('message', function (topic, message) {
     }
 })
 
-function RequestTrackerStatus(id,callback) {
+function RequestTrackerStatus(id, callback) {
     var Tracker
     var OldTimestamp
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
-    for(let i = 0; i < GlobalTrackerList.length; i++) {
-        if(GlobalTrackerList[i].id == id) {
+    for (let i = 0; i < GlobalTrackerList.length; i++) {
+        if (GlobalTrackerList[i].id == id) {
             Tracker = i
             OldTimestamp = GlobalTrackerList[i].timestamp
             client.publish(GlobalTrackerList[i].topicRX, 'STS-RQ')
             break
         }
     }
-    setTimeout(() => { // Wait 5s for tracker to respond.
-        if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
-            ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
-        }
-        else {
-            ToReturn.status = GlobalTrackerList[Tracker].status
-        }
+    if (Tracker == undefined) {
+        ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         callback(ToReturn)
-    }, 5000);
+    }
+    else {
+        setTimeout(() => { // Wait 5s for tracker to respond.
+            if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+                ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+            }
+            else {
+                ToReturn.status = GlobalTrackerList[Tracker].status
+            }
+            callback(ToReturn)
+        }, 5000);
+    }
 }
 
-function PingTracker(id,callback) {
+function PingTracker(id, callback) {
     var Tracker
     var OldTimestamp
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
-    for(let i = 0; i < GlobalTrackerList.length; i++) {
-        if(GlobalTrackerList[i].id == id) {
+    for (let i = 0; i < GlobalTrackerList.length; i++) {
+        if (GlobalTrackerList[i].id == id) {
             Tracker = i
             OldTimestamp = GlobalTrackerList[i].timestamp
             client.publish(GlobalTrackerList[i].topicRX, 'PING')
@@ -156,7 +165,7 @@ function PingTracker(id,callback) {
         }
     }
     setTimeout(() => { // Wait 5s for tracker to respond.
-        if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+        if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         }
         else {
@@ -166,29 +175,29 @@ function PingTracker(id,callback) {
     }, 5000);
 }
 
-function RequestTrackerPosition(id,callback) {
+function RequestTrackerPosition(id, callback) {
     var Tracker = undefined
     var OldTimestamp
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
-    for(let i = 0; i < GlobalTrackerList.length; i++) {
-        if(GlobalTrackerList[i].id == id) {
+    for (let i = 0; i < GlobalTrackerList.length; i++) {
+        if (GlobalTrackerList[i].id == id) {
             Tracker = i
             OldTimestamp = GlobalTrackerList[i].timestamp
             client.publish(GlobalTrackerList[i].topicRX, 'POS-RQ')
             break
         }
     }
-    if(Tracker == undefined) {
+    if (Tracker == undefined) {
         ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         callback(ToReturn)
     }
     else {
-        mysql.GetTrackerLastPosition(GlobalTrackerList[Tracker].id, function(data) {
+        mysql.GetTrackerLastPosition(GlobalTrackerList[Tracker].id, function (data) {
             callback(ToReturn)
         })
         setTimeout(() => { // Wait 5s for tracker to respond.
-            if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+            if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
                 ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
             }
             else {
@@ -196,14 +205,19 @@ function RequestTrackerPosition(id,callback) {
             }
         }, 5000);
     }
-    
+
 }
 
 module.exports = {
-    RequestTrackerPosition: function(id,callback) {
-        RequestTrackerPosition(id,callback)
+    RequestTrackerPosition: function (id, callback) {
+        RequestTrackerPosition(id, callback)
     },
-    RequestTrackerStatus: function (id,callback) {
-        RequestTrackerStatus(id,callback)
+    RequestTrackerStatus: function (id, callback) {
+        RequestTrackerStatus(id, callback)
     }
 }
+
+
+RequestTrackerStatus(3, function (data) {
+    console.log(data)
+})

@@ -270,14 +270,12 @@ function UpdateTrackerStatus(status, topic, callback) {
                         console.error(err)
                         ToReturn.error = err
                     }
-                    callback(ToReturn);
                 });
             }
 
             else {
                 ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
             }
-            debug.Print(result)
         }
         callback(ToReturn)
     });
@@ -299,7 +297,6 @@ function GetAllTrackersTopics(callback) {
             else {
                 ToReturn.error = ERROR_CODES.ErrorUserHasNoTracker
             }
-            debug.Print(result)
         }
         callback(ToReturn)
     });
