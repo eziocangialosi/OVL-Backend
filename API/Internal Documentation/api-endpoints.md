@@ -78,8 +78,12 @@
 | ----------- | ------------------------------------------- |
 | Used to     | Delete from system a tracker                |
 | Json Output | `{"error": {"Code": int, "Message": string}}` |
+| Status      | Not Implemented ❌ |
+| Unit Test      | TODO ⏳ |
 
 | DELETE      | /user/{mail}                                |
 | ----------- | ------------------------------------------- |
 | Used to     | Delete a user from system                   |
 | Json Output | `{"error": {"Code": int, "Message": string}}` |
+| Status      | Not Implemented ❌ |
+| Unit Test      | TODO ⏳ |
