@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const config = require('./config.json')
+const config = require('./config.json') // Load config file.
 const https = require('https'); // Required to use HTTPS for the REST API
 const express = require('express'); // Required for the REST API to work.
-const cors = require('cors')
-const date = require('./date')
+const cors = require('cors') // Needed to sertup REST API for mobile use.
+const date = require('./date') // Date functions.
 const encryption = require('./encryption')
 const mysql = require('./mysql')
 const mqtt = require('./mqtt')
@@ -13,18 +13,13 @@ const app = express() // Create the REST API
 const key = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Key));
 const cert = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Cert));
 const ERROR_CODES = require('./error_codes').ERROR_CODES;
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors({
+const debug = require('./debug') // Debug function.
+app.use(express.json()); // Needed for the json format response.
+app.use(express.urlencoded({ extended: true })); // Allow urlencode parameters.
+app.use(cors({ // This setup the REST API
     origin: "*", // Allow Redirection for mobile Apps.
     methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'] // Allow all of this methods to all API endpoints.
 }));
-
-function DebugPrint(data) { // This function print data if config.Debug is set to true.
-    if (config.Debug == true) {
-        console.log("[" + date.GetDate() + "] [" + date.GetTime() + "] -> " + data)
-    }
-}
 
 function HandlePositionActualRequest(req, res) { // [DUMMY]
     mqtt.RequestTrackerPosition(req.params.id,function(data) {
@@ -52,7 +47,6 @@ function HandleGetUserTrackers(req, res) { // Return tracker list of a user from
 }
 
 function HandleUserInfoRequest(req, res) { // Return User info if mail and password good. [DONE]
-    DebugPrint("Received user information request for " + req.params.mail + " with password : " + req.params.password + ".")
     mysql.CheckUserCredentials(req.params.mail, function (UserCredentials) {
         if (UserCredentials.error.Code == 0) {
             UserCredentials.data.password = UserCredentials.data.password.replace('$2y$', '$2a$');
@@ -78,7 +72,6 @@ function HandleStatusRequest(req, res) { //
 }
 
 function HandleUserAddRequest(req, res) { // Add user to DB if it dosen't exist.
-    DebugPrint("Received add user request with the following mail and password : " + req.body.mail + " " + req.body.password)
     encryption.EncryptPassword(req.body.password, function (hash) {
         mysql.AddUserToDb(req.body.mail, hash, "I need to dev this shit but i dont have very envie", function (data) {
             res.status(200).json(data) // Reply with the json object.
@@ -129,7 +122,7 @@ function HandleTrackerAddRequest(req,res) { // Add a tracker to a user based on 
 }
 
 const Server = https.createServer({ key, cert }, app).listen(config.Server_Port, () => { // Create secure HTTPS REST API
-    DebugPrint("Server started and ready to respond.")
+    debug.Print("Server started and ready to respond.")
 })
 
 app.get('/', (req, res) => { // Redirect '/' to web interface. [DONE]
@@ -144,14 +137,6 @@ app.get('/status/:id_iot/', (req, res) => { // Get Status
     HandleStatusRequest(req, res)
 })
 
-app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
-    HandleUserAddRequest(req, res)
-})
-
-app.post('/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
-    HandleTrackerAddRequest(req, res)
-})
-
 app.get('/iot_list/:token/', (req, res) => { // Endpoint used to get the list of trackers from a user token. [DONE]
     HandleGetUserTrackers(req, res);
 })
@@ -162,6 +147,14 @@ app.get('/test/position/history/:id/', (req, res) => { // Endpoint used to posit
 
 app.get('/test/status_list/:token/', (req, res) => { // Return a user tracker list.
     HandlerGetStatusList(req, res)
+})
+
+app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
+    HandleUserAddRequest(req, res)
+})
+
+app.post('/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
+    HandleTrackerAddRequest(req, res)
 })
 
 app.put('/set/status/', (res, req) => { // Endpoint used to set tracker status. [TOFINISH]
