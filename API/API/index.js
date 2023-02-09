@@ -27,13 +27,10 @@ function DebugPrint(data) { // This function print data if config.Debug is set t
 }
 
 function HandlePositionActualRequest(req, res) { // [DUMMY]
-    let ToReturn = new Object() // Create the return json object.
-    DebugPrint("Received actual position request for " + req.params.id + ".")
-    ToReturn.error = ERROR_CODES.ErrorOK // Storing the ErrorJson ocject template in the ToReturn json object.
-    ToReturn.now = new Object() // Creating the json now object. 
-    ToReturn.now.posx = 9.56454654 // Setting PosX of the tracker in the object.
-    ToReturn.now.posy = 15.56454654 // Setting PosY of the tracker in the object.
-    res.status(200).json(ToReturn) // Reply with the json object.
+    mqtt.RequestTrackerPosition(req.params.id,function(data) {
+        res.status(200).json(data) // Reply with the json object.
+    })
+    
 }
 
 function HandleGetUserTrackers(req, res) { // Return tracker list of a user from his token [DONE]
@@ -115,7 +112,7 @@ function HandlerGetStatusList(req, res) { // Return all status from all trackers
 }
 
 function HandlerSetStatus(req, res) { // Set a tracker status [TODO]
-    mysql.SetTrackerStatus(req.body.id_iot, req.body.status_charge, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
+    mysql.SetTrackerStatus(req.body.id_iot, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
         if (data.error.Code == 0) {
             res.status(200).json({ error: ERROR_CODES.ErrorOK })
         }
@@ -151,7 +148,7 @@ app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
     HandleUserAddRequest(req, res)
 })
 
-app.post('/iot/', (req, res) => { // Endpoint to add a user. [DONE]
+app.post('/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
     HandleTrackerAddRequest(req, res)
 })
 

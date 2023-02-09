@@ -52,6 +52,14 @@ client.on('message', function (topic, message) {
     if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish(topic, 'SYN-ACK') // Respond to the message.
     }
+    else if(message.toString().startsWith("STG-RQ")) {
+        mysql.GetTrackerStatus(topic,function(data) {
+            //var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+",15.0"
+            var to_send = "STG="+1+","+0+","+0+",15"
+            debug.Print(to_send)
+            client.publish(topic, to_send)
+        })
+    }
     else if (message.toString().startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker. mosquitto_pub -h ovl.tech-user.fr -p 6868 -t TX -m "STS=bat,charge,veh_chg,eco-mode,protection,alarm,gps"
         TrackerStatus = {
             bat: message.toString().split('=')[1].split(',')[0],
@@ -71,7 +79,7 @@ client.on('message', function (topic, message) {
         }
         mysql.UpdateTrackerStatus(TrackerStatus,topic,function(data)
         {
-            if(data.error == ERROR_CODES.ErrorOK) {
+            if(data.error == ERROR_CODES.ErrorOK) { // If nothing broke.
                 client.publish(topic, 'STS-ACK') // Respond to the message.
             }
         })
@@ -99,6 +107,7 @@ client.on('message', function (topic, message) {
                 break
             }
         }
+        console.log(TrackerPosition)
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("POS-ERR")) { // Position error for the tracker.
@@ -158,7 +167,7 @@ function PingTracker(id,callback) {
 }
 
 function RequestTrackerPosition(id,callback) {
-    var Tracker
+    var Tracker = undefined
     var OldTimestamp
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -170,15 +179,24 @@ function RequestTrackerPosition(id,callback) {
             break
         }
     }
-    setTimeout(() => { // Wait 5s for tracker to respond.
-        if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
-            ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
-        }
-        else {
-            ToReturn.position = GlobalTrackerList[Tracker].pos
-        }
+    if(Tracker == undefined) {
+        ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         callback(ToReturn)
-    }, 5000);
+    }
+    else {
+        mysql.GetTrackerLastPosition(GlobalTrackerList[Tracker].id, function(data) {
+            callback(ToReturn)
+        })
+        setTimeout(() => { // Wait 5s for tracker to respond.
+            if(GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+                ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+            }
+            else {
+                ToReturn.position = GlobalTrackerList[Tracker].pos
+            }
+        }, 5000);
+    }
+    
 }
 
 module.exports = {

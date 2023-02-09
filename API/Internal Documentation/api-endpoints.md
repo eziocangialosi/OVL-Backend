@@ -27,12 +27,12 @@
 
 | GET         | /position/now/{id}                                                      |
 | ----------- | ----------------------------------------------------------------------- |
-| Used to     | Get the current position of the tracker                                 |
+| Used to     | Get the current position of the tracker based on his id                                |
 | Json Output | `{"lon": float, "lat": float, "error": {"code": int, "msg": string}}` |
 
 | GET         | /position/history/{id}                                                                                       |
 | ----------- | ------------------------------------------------------------------------------------------------------------ |
-| Used to     | Obtain all position history of tracker                                                                       |
+| Used to     | Obtain all position history of a tracker based on his id                                                                      |
 | Json Output | `{"history": [{"lon": float, "lat": float, "timestamp": int},...], "error": {"code": int, "msg": string}}` |
 
 | PUT         | /protection/{id}/{state}                    |

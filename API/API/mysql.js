@@ -86,6 +86,26 @@ function GetTrackersStatusList(token, callback) {
     });
 }
 
+function GetTrackerStatus(topic, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("SELECT status_charge, status_bat, status_alarm, status_online, status_ecomode, status_protection, status_vh_charge, status_gps, id_iot, timestamp FROM Status_IOT where id_iot in (SELECT id FROM CredentialsTracker WHERE topicRX ='" + topic + "')", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] == undefined) {
+                ToReturn.error = ERROR_CODES.ErrorSQLSelectError
+            }
+            else {
+                ToReturn.status = result[0]
+            }
+        }
+        callback(ToReturn);
+    });
+}
+
 function GetTrackerPosition(id_iot, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -105,7 +125,28 @@ function GetTrackerPosition(id_iot, callback) {
         callback(ToReturn);
     });
 }
-function SetTrackerStatus(id_iot, status_charge, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
+
+function GetTrackerLastPosition(id_iot, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("SELECT lat ,lon ,timestamp FROM Pos_IOT WHERE id_iot='" + id_iot + "' ORDER BY id DESC LIMIT 1", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] == undefined) {
+                ToReturn.error = ERROR_CODES.ErrorSQLSelectError
+            }
+            else {
+                ToReturn.now = result[0]
+            }
+        }
+        callback(ToReturn);
+    });
+}
+
+function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     con.query("UPDATE Status_IOT SET status_charge = '" + status_charge + "',status_alarm = '" + status_alarm + "',status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
@@ -295,4 +336,10 @@ module.exports = { // Export funtion for other file to use it.
     GetAllTrackersTopics: function(callback) {
         GetAllTrackersTopics(callback)
     },
+    GetTrackerLastPosition: function(id_iot, callback) {
+        GetTrackerLastPosition(id_iot, callback)
+    },
+    GetTrackerStatus: function(topic, callback) {
+        GetTrackerStatus(topic, callback)
+    }
 }
