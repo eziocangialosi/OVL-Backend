@@ -175,26 +175,26 @@ app.put('/set/status/', (res, req) => { // Endpoint used to set tracker status. 
 ########################################################################################################################
 */
 
-app.get('/users/:email/:password', (req, res) => {
-    ToReturn = new Object();
-    ToReturn.error = ERROR_CODES.ErrorOK; // Storing the ErrorJson object template in the ToReturn json object.
-    mysql.CheckUserCredentials(req.params.email, function (data) {
-        if (data.error.Code == 0) {
-            data.data.password = data.data.password.replace('$2y$', '$2a$');
-            if (bcrypt.compareSync(req.params.password, data.data.password)) {
-                res.status(200).json({ error: ERROR_CODES.ErrorOK, token: data.data.token });
-            }
-            else {
-                data.error = ERROR_CODES.ErrorUserWrongCredentials
-                data.data = undefined
-                res.status(200).json(data);
-            }
-        }
-        else {
-            ToReturn.error = data.error
-            res.status(200).json(ToReturn); // Reply with the error json object.
-        }
-    });
+// app.get('/users/:email/:password', (req, res) => {
+//     ToReturn = new Object();
+//     ToReturn.error = ERROR_CODES.ErrorOK; // Storing the ErrorJson object template in the ToReturn json object.
+//     mysql.CheckUserCredentials(req.params.email, function (data) {
+//         if (data.error.Code == 0) {
+//             data.data.password = data.data.password.replace('$2y$', '$2a$');
+//             if (bcrypt.compareSync(req.params.password, data.data.password)) {
+//                 res.status(200).json({ error: ERROR_CODES.ErrorOK, token: data.data.token });
+//             }
+//             else {
+//                 data.error = ERROR_CODES.ErrorUserWrongCredentials
+//                 data.data = undefined
+//                 res.status(200).json(data);
+//             }
+//         }
+//         else {
+//             ToReturn.error = data.error
+//             res.status(200).json(ToReturn); // Reply with the error json object.
+//         }
+//     });
 
-})
+// })
 

@@ -149,7 +149,7 @@ function GetTrackerLastPosition(id_iot, callback) {
 function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
-    con.query("UPDATE Status_IOT SET status_alarm = '"+ status_alarm + "',status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
+    con.query("UPDATE Status_IOT SET status_alarm = '" + status_alarm + "',status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
         if (err) {
             console.error(err)
             ToReturn.error = err
@@ -223,23 +223,24 @@ function AddTrackerToUser(token, tracker, callback) { // Used to add a new track
                         ToReturn.error = err
                     }
                     else { // If nothing fail.
-                        TrackerId = result[0].ID+1 // As the result only count the existing entries we add 1.
-                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + tracker + "', '" + "password" + "', 'topicRX_" +TrackerId +"', 'topicTX_" +TrackerId +"','"+UserId+"')", function (err, result) {
+                        TrackerId = result[0].ID + 1 // As the result only count the existing entries we add 1.
+                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + tracker + "', '" + "password" + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "')", function (err, result) {
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
                             }
                             else { // If nothing fail.
-                                con.query("INSERT INTO Status_IOT (id_iot,timestamp) VALUES ('" + TrackerId + "', '"+date.GetTimestamp() +"')", function (err, result) {
+                                con.query("INSERT INTO Status_IOT (id_iot,timestamp) VALUES ('" + TrackerId + "', '" + date.GetTimestamp() + "')", function (err, result) {
                                     if (err) {
                                         console.error(err)
                                         ToReturn.error = err
                                     }
                                     else { // If nothing have failed we return the two topics of the tracker.
                                         ToReturn.Topics = {
-                                            RX: "topicRX_" +TrackerId,
-                                            TX: "topicTX_" +TrackerId,
+                                            RX: "topicRX_" + TrackerId,
+                                            TX: "topicTX_" + TrackerId,
                                         }
+                                        ToReturn.TrackerId = TrackerId
                                     }
                                 });
                             }
@@ -248,11 +249,11 @@ function AddTrackerToUser(token, tracker, callback) { // Used to add a new track
                 })
             }
             else {
-                    ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid // The provided token seams to be wrong so we return the error code.
-                }
+                ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid // The provided token seams to be wrong so we return the error code.
             }
-            callback(ToReturn)
-        });
+        }
+        callback(ToReturn)
+    });
 }
 
 function UpdateTrackerStatus(status, topic, callback) {
@@ -290,7 +291,7 @@ function GetAllTrackersTopics(callback) {
         }
         else {
             if (result[0] != undefined) {
-               ToReturn.trackers = result
+                ToReturn.trackers = result
             }
 
             else {
@@ -298,6 +299,17 @@ function GetAllTrackersTopics(callback) {
             }
         }
         callback(ToReturn)
+    });
+}
+
+
+function AddPositionOfTrackerToDb(pos,id,date,callback) {
+    var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
+    con.query(sql, function (err, result) {
+        if (err) {
+            ToReturn.error = ERROR_CODES.ErrorSQLInjectError
+            throw err
+        }
     });
 }
 
@@ -326,16 +338,16 @@ module.exports = { // Export funtion for other file to use it.
     UpdateTrackerStatus: function (status, topic, callback) {
         UpdateTrackerStatus(status, topic, callback)
     },
-    AddTrackerToUser: function(token, tracker, callback) {
+    AddTrackerToUser: function (token, tracker, callback) {
         AddTrackerToUser(token, tracker, callback)
     },
-    GetAllTrackersTopics: function(callback) {
+    GetAllTrackersTopics: function (callback) {
         GetAllTrackersTopics(callback)
     },
-    GetTrackerLastPosition: function(id_iot, callback) {
+    GetTrackerLastPosition: function (id_iot, callback) {
         GetTrackerLastPosition(id_iot, callback)
     },
-    GetTrackerStatus: function(topic, callback) {
+    GetTrackerStatus: function (topic, callback) {
         GetTrackerStatus(topic, callback)
     }
 }
