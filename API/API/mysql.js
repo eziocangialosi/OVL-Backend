@@ -1,9 +1,12 @@
+/** @module MySQL */
 var mysql = require('mysql'); // Required for the REST API to work.
 const debug = require('./debug')
 const { ERROR_CODES } = require('./error_codes');
 const config = require('./config.json')
 var con = mysql.createConnection(config.Database_Config);
 const date = require('./date')
+
+
 function handleDisconnect() { // This thing reconnect the database.
     con = mysql.createConnection(config.Database_Config);
     con.connect(function onConnect(err) {   // The server is either down
@@ -24,6 +27,11 @@ function handleDisconnect() { // This thing reconnect the database.
 }
 handleDisconnect();
 
+/**
+ * Fetch all data of a user from his mail.
+ * @param {string} mail - The mail of the user
+ * @param {function} callback - The callback to trigger after checking credentials.
+ */
 function CheckUserCredentials(mail, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -44,6 +52,11 @@ function CheckUserCredentials(mail, callback) {
     });
 }
 
+/**
+ * Fetch all trackers of a user from his id and put it in an array (iotArray).
+ * @param {(int)} user_id - The unique id of the user.
+ * @param {function} callback - The callback to trigger.
+ */
 function GetUserTrackers(user_id, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -65,7 +78,11 @@ function GetUserTrackers(user_id, callback) {
         callback(ToReturn);
     });
 }
-
+/**
+ * Fetch all trackers status of a user from his token and put it in an array (status_list).
+ * @param {(string)} token - The auth token of the user.
+ * @param {function} callback - The callback to trigger.
+ */
 function GetTrackersStatusList(token, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -85,7 +102,11 @@ function GetTrackersStatusList(token, callback) {
         callback(ToReturn);
     });
 }
-
+/**
+ * Fetch a tracker status from the DB from his unique MQTT topic (status).
+ * @param {(string)} topic - The unique token of the tracker.
+ * @param {function} callback - The callback to trigger.
+ */
 function GetTrackerStatus(topic, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -106,7 +127,12 @@ function GetTrackerStatus(topic, callback) {
     });
 }
 
-function GetTrackerPosition(id_iot, callback) {
+/**
+ * Fetch the position history of a tracker based on his unique id (history).
+ * @param {(int)} id_iot - The unique id of the tracker.
+ * @param {function} callback - The callback to trigger.
+ */
+function GetTrackerHistoryPosition(id_iot, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     con.query("SELECT lat ,lon ,timestamp FROM Pos_IOT WHERE id_iot='" + id_iot + "'", (err, result) => {
@@ -126,6 +152,11 @@ function GetTrackerPosition(id_iot, callback) {
     });
 }
 
+/**
+ * Fetch the last position of a tracker based on his unique ID (now).
+ * @param {(int)} id_iot - The unique id of the tracker.
+ * @param {function} callback - The callback to trigger.
+ */
 function GetTrackerLastPosition(id_iot, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -146,6 +177,15 @@ function GetTrackerLastPosition(id_iot, callback) {
     });
 }
 
+/**
+ * Set the tracker status in the DB with his unique ID.
+ * @param {(int)} id_iot - The unique id of the tracker.
+ * @param {(bool)} status_alarm - If the alarm is ON/OFF.
+ * @param {(bool)} status_ecomode - If the ecomode is ON/OFF.
+ * @param {(bool)} status_protection - If the zone protection is ON/OFF.
+ * @param {(bool)} status_vh_charge - If the device is allowed to charge is ON/OFF.
+ * @param {function} callback - The callback to trigger.
+ */
 function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -158,6 +198,11 @@ function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protectio
     });
 }
 
+/**
+ * Fetch the user information from the user auth token (id).
+ * @param {(string)} token - The auth token of the user.
+ * @param {function} callback - The callback to trigger.
+ */
 function GetUserInformation(token, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -178,6 +223,13 @@ function GetUserInformation(token, callback) {
     });
 }
 
+/**
+ * Add a new user to the DB with provided informations.
+ * @param {(string)} mail - The e-mail of the user.
+ * @param {(string)} password - The hash password of the user.
+ * @param {(string)} token - The auth token of the user.
+ * @param {function} callback - The callback to trigger.
+ */
 function AddUserToDb(mail, password, token, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -204,7 +256,13 @@ function AddUserToDb(mail, password, token, callback) {
     });
 }
 
-function AddTrackerToUser(token, tracker, callback) { // Used to add a new tracker in the following tables : CredentialsTracker, Status_IOT.
+/**
+ * Add a new tracker to the DB and link it to an existing user.
+ * @param {(string)} token - The auth token of the user.
+ * @param {(string)} trackerName - The tracker name.
+ * @param {function} callback - The callback to trigger.
+ */
+function AddTrackerToUser(token, trackerName, callback) { // Used to add a new tracker in the following tables : CredentialsTracker, Status_IOT.
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     var UserId = 0
@@ -224,7 +282,7 @@ function AddTrackerToUser(token, tracker, callback) { // Used to add a new track
                     }
                     else { // If nothing fail.
                         TrackerId = result[0].ID + 1 // As the result only count the existing entries we add 1.
-                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + tracker + "', '" + "password" + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "')", function (err, result) {
+                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + trackerName + "', '" + "password" + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "')", function (err, result) {
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
@@ -256,6 +314,12 @@ function AddTrackerToUser(token, tracker, callback) { // Used to add a new track
     });
 }
 
+/**
+ * Update the tracker status in the DB.
+ * @param {(object)} status - The status of the tracker.
+ * @param {(string)} topic - The unique MQTT topic of the tracker.
+ * @param {function} callback - The callback to trigger.
+ */
 function UpdateTrackerStatus(status, topic, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -281,6 +345,10 @@ function UpdateTrackerStatus(status, topic, callback) {
     });
 }
 
+/**
+ * Fetch all credentials off all the existing trackers from the DB.
+ * @param {function} callback - The callback to trigger.
+ */
 function GetAllTrackersTopics(callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -302,6 +370,13 @@ function GetAllTrackersTopics(callback) {
     });
 }
 
+/**
+ * Add a position of a tracker to the DB from his id.
+ * @param {(object)} pos - The position object.
+ * @param {(int)} id - The unique ID of the tracker.
+ * @param {(int)} pos - The timestamp of the position.
+ * @param {function} callback - The callback to trigger adding the position.
+ */
 function AddPositionOfTrackerToDb(pos, id, date, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
@@ -336,48 +411,22 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
                 }
             });
         }
-    });
-    return ToReturn
+        callback(ToReturn)
+    });   
 }
 
 module.exports = { // Export funtion for other file to use it.
-    GetUserInformation: function (token, callback) {
-        GetUserInformation(token, callback)
-    },
-    AddUserToDb: function (mail, pass, token, callback) {
-        AddUserToDb(mail, pass, token, callback)
-    },
-    CheckUserCredentials: function (mail, callback) {
-        CheckUserCredentials(mail, callback)
-    },
-    GetUserTrackers: function (user_id, callback) {
-        GetUserTrackers(user_id, callback)
-    },
-    GetTrackerPosition: function (id_iot, callback) {
-        GetTrackerPosition(id_iot, callback)
-    },
-    GetTrackersStatusList: function (token, callback) {
-        GetTrackersStatusList(token, callback)
-    },
-    SetTrackerStatus: function (id_iot, status_charge, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
-        SetTrackerStatus(id_iot, status_charge, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback)
-    },
-    UpdateTrackerStatus: function (status, topic, callback) {
-        UpdateTrackerStatus(status, topic, callback)
-    },
-    AddTrackerToUser: function (token, tracker, callback) {
-        AddTrackerToUser(token, tracker, callback)
-    },
-    GetAllTrackersTopics: function (callback) {
-        GetAllTrackersTopics(callback)
-    },
-    GetTrackerLastPosition: function (id_iot, callback) {
-        GetTrackerLastPosition(id_iot, callback)
-    },
-    GetTrackerStatus: function (topic, callback) {
-        GetTrackerStatus(topic, callback)
-    },
-    AddPositionOfTrackerToDb: function (pos, id, date, callback) {
-        AddPositionOfTrackerToDb(pos, id, date, callback)
-    }
+    GetUserInformation,
+    AddUserToDb,
+    CheckUserCredentials,
+    GetUserTrackers,
+    GetTrackerHistoryPosition,
+    GetTrackersStatusList,
+    SetTrackerStatus,
+    UpdateTrackerStatus,
+    AddTrackerToUser,
+    GetAllTrackersTopics,
+    GetTrackerLastPosition,
+    GetTrackerStatus,
+    AddPositionOfTrackerToDb,
 }
