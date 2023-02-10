@@ -302,29 +302,42 @@ function GetAllTrackersTopics(callback) {
     });
 }
 
-
 function AddPositionOfTrackerToDb(pos, id, date, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
+    var temp = ""
     con.query(sql, function (err, result) {
         if (err) {
             ToReturn.error = ERROR_CODES.ErrorSQLInjectError
             throw err
         }
         else {
-            sql = "DELETE FROM Pos_IOT WHERE ROWID IN (SELECT ROWID FROM Pos_IOT ORDER BY ROWID DESC LIMIT -1 OFFSET 20)";
+            sql = "SELECT * FROM Pos_IOT WHERE id_iot = '"+id+"' ORDER BY id DESC LIMIT 20"; // This SQL request keep only the last 20 records in the database
             con.query(sql, function (err, result) {
                 if (err) {
                     ToReturn.error = ERROR_CODES.ErrorSQLInjectError
                     throw err
                 }
+                else {
+                    for (let i = 0; i < result.length; i++) {
+                        if(i != 0) {
+                            temp = temp +  + ","
+                        }
+                        temp = temp + result[i].id 
+                    }
+                    sql = "DELETE FROM Pos_IOT WHERE id IN ("+temp+")"
+                    con.query(sql, function (err, result) {
+                        if (err) {
+                            ToReturn.error = ERROR_CODES.ErrorSQLInjectError
+                            throw err
+                        }
+                    });
+                }
             });
         }
     });
-
-
-
+    return ToReturn
 }
 
 module.exports = { // Export funtion for other file to use it.

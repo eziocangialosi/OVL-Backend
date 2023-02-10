@@ -4,6 +4,7 @@ const { ERROR_CODES } = require('./error_codes')
 const mysql = require('./mysql')
 const client = mqtt.connect('mqtt://ovl.tech-user.fr:6868')
 const debug = require('./debug')
+const config = require('./config')
 
 var GlobalTrackerList = new Array();
 client.on('connect', function () {
@@ -168,7 +169,7 @@ function PingTracker(id, callback) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         }
         else {
-            ToReturn.position = GlobalTrackerList[Tracker].pos
+            ToReturn.error = ERROR_CODES.ErrorOK
         }
         callback(ToReturn)
     }, 5000);
@@ -177,13 +178,14 @@ function PingTracker(id, callback) {
 function RequestTrackerPosition(id, callback) {
     var Tracker = undefined
     var OldTimestamp
+    var Topic = undefined
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
     for (let i = 0; i < GlobalTrackerList.length; i++) {
         if (GlobalTrackerList[i].id == id) {
             Tracker = i
             OldTimestamp = GlobalTrackerList[i].timestamp
-            client.publish(GlobalTrackerList[i].topicRX, 'POS-RQ')
+            Topic = GlobalTrackerList[i].topicRX
             break
         }
     }
@@ -193,16 +195,35 @@ function RequestTrackerPosition(id, callback) {
     }
     else {
         mysql.GetTrackerLastPosition(GlobalTrackerList[Tracker].id, function (data) {
+            ToReturn = data
+            console.log(parseInt(ToReturn.now.timestamp) - date.GetTimestamp())
+            if((date.GetTimestamp() - parseInt(ToReturn.now.timestamp)) > config.TrackerCheckTime ) {
+                debug.Print("Ask for pos")
+                client.publish(Topic, 'POS-RQ')
+                setTimeout(() => { // Wait 5s for tracker to respond.
+                    debug.Print("Verifying pos")
+                    if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+                        ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+                    }
+                    else {
+                        ToReturn.position = GlobalTrackerList[Tracker].pos
+                    }
+                }, 5000);
+            }
             callback(ToReturn)
         })
-        setTimeout(() => { // Wait 5s for tracker to respond.
-            if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
-                ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
-            }
-            else {
-                ToReturn.position = GlobalTrackerList[Tracker].pos
-            }
-        }, 5000);
+    }
+}
+
+function AddTracker(id,trackerName,topicRX,topicTX) {
+    GlobalTrackerList[GlobalTrackerList.length] = {
+        id: id,
+        name: trackerName,
+        topicRX: topicRX,
+        topicTX: topicTX,
+        pos: {},
+        status: {},
+        timestamp: date.GetTimestamp(),
     }
 }
 
@@ -212,17 +233,21 @@ module.exports = {
     },
     RequestTrackerStatus: function (id, callback) {
         RequestTrackerStatus(id, callback)
+    },
+    PingTracker: function(id, callback) {
+        PingTracker(id, callback)
+    },
+    AddTracker: function(id,trackerName,topicRX,topicTX) {
+        AddTracker(id,trackerName,topicRX,topicTX) 
     }
 }
 
 
-
-
-
-
-
 function DEBUG() {
     RequestTrackerStatus(3, function (data) {
+        //console.log(data)
+    })
+    RequestTrackerPosition(3, function (data) {
         console.log(data)
     })
 }
