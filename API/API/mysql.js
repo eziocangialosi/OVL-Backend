@@ -7,7 +7,7 @@
 var mysql = require('mysql'); // Required for the REST API to work.
 const debug = require('./debug')
 const { ERROR_CODES } = require('./error_codes');
-const config = require('./config.json')
+const config = require('./config')
 var con = mysql.createConnection(config.Database_Config);
 const date = require('./date')
 function handleDisconnect() { // This thing reconnect the database.

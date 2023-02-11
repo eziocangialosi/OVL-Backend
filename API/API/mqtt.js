@@ -10,7 +10,13 @@ const client = mqtt.connect('mqtt://ovl.tech-user.fr:6868')
 const debug = require('./debug')
 const config = require('./config')
 
+/**
+ * Array of all `TrackerDetails` Objects.
+ */
 var GlobalTrackerList = new Array();
+/**
+ * This listener start on successful connection to the MQTT broker, and launch the subscribe of all trackers topics.
+ */
 client.on('connect', function () {
     mysql.GetAllTrackersTopics(function (data) {
         if (data.error == ERROR_CODES.ErrorOK) {
@@ -40,6 +46,7 @@ client.on('connect', function () {
         }
     })
 })
+
 /**
  * Display in the console the number of UP trackers with the help of `GlobalTrackerList`, this function is called on the module init but can be recalled at convenience.
  */
@@ -53,13 +60,14 @@ function CheckTrackersPingResponse() {
     debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
 }
 
-client.on('message', function (topic, message) {
+/**
+ * This listener take the `topic` and the `message` of MQTT frames, and trigger the corresponding actions.
+ */
+const MQTT_Listener = client.on('message', function (topic, message) {
     debug.Print("Received MQTT message : " + message.toString())
     topic = topic.replace('TX', 'RX') // Replace topic type to respond on other topic.
     if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish(topic, 'SYN-ACK') // Respond to the message.
-    }
-    else if (message.toString().startsWith("POS-ERR")) {
     }
     else if (message.toString().startsWith("STG-RQ")) {
         mysql.GetTrackerStatus(topic, function (data) {
@@ -117,9 +125,6 @@ client.on('message', function (topic, message) {
                 break
             }
         }
-        client.publish(topic, 'POS-ACK') // Respond to the message.
-    }
-    else if (message.toString().startsWith("POS-ERR")) { // Position error for the tracker.
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
