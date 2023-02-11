@@ -38,11 +38,11 @@ app.get('/iot_list/:token/', (req, res) => { // Endpoint used to get the list of
 })
 
 app.get('/status_list/:token/', (req, res) => { // Return a user tracker list.
-    api_handler.HandlerGetStatusList(req, res)
+    api_handler.HandleGetStatusList(req, res)
 })
 
 app.get('/position/now/:id', (req, res) => { // Endpoint to get the actual position of a tracker based on his ID. [TODO]
-    api_handler.HandlePositionActualRequest(req, res) // Trigger the Position request.
+    api_handler.HandleGetTrackerPositionActual(req, res) // Trigger the Position request.
 })
 
 app.get('/position/history/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
@@ -58,5 +58,5 @@ app.post('/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
 })
 
 app.put('/set/status/', (res, req) => { // Endpoint used to set tracker status. [TOFINISH]
-    api_handler.HandlerSetStatus(res, req)
+    api_handler.HandleSetStatus(res, req)
 })

@@ -1,3 +1,7 @@
+/**
+ * @module MQTT
+ * @description This module handle the communication with all the trackers with the help of the MQTT protocol.
+ */
 const mqtt = require('mqtt')
 const date = require('./date')
 const { ERROR_CODES } = require('./error_codes')
@@ -36,7 +40,9 @@ client.on('connect', function () {
         }
     })
 })
-
+/**
+ * Display in the console the number of UP trackers with the help of `GlobalTrackerList`, this function is called on the module init but can be recalled at convenience.
+ */
 function CheckTrackersPingResponse() {
     var OfflineDevices = 0
     for (let i = 0; i < GlobalTrackerList.length; i++) {
@@ -44,7 +50,7 @@ function CheckTrackersPingResponse() {
             OfflineDevices++
         }
     }
-    debug.Print("Init loop finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
+    debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
 }
 
 client.on('message', function (topic, message) {
@@ -228,15 +234,37 @@ function AddTracker(id,trackerName,topicRX,topicTX) {
 }
 
 module.exports = {
+    /**
+     * Send a MQTT position request to the tracker based on his unique ID.
+     * @param {int} id Tracker unique ID.
+     * @param {function} callback Callback function to trigger.
+     */
     RequestTrackerPosition: function (id, callback) {
         RequestTrackerPosition(id, callback)
     },
+    /**
+     * Send a MQTT status request to the tracker based on his unique ID.
+     * @param {int} id Tracker unique ID.
+     * @param {function} callback Callback function to trigger.
+     */
     RequestTrackerStatus: function (id, callback) {
         RequestTrackerStatus(id, callback)
     },
+    /**
+     * Send a MQTT ping request to the tracker based on his unique ID.
+     * @param {int} id Tracker unique ID.
+     * @param {function} callback Callback function to trigger.
+     */
     PingTracker: function(id, callback) {
         PingTracker(id, callback)
     },
+    /**
+     * Add a new tracker to the MQTT module without restarting it.
+     * @param {int} id Tracker unique ID.
+     * @param {string} trackerName Tracker name.
+     * @param {string} topicRX MQTT Unique topicTX.
+     * @param {string} topicTX MQTT Unique topicRX.
+     */
     AddTracker: function(id,trackerName,topicRX,topicTX) {
         AddTracker(id,trackerName,topicRX,topicTX) 
     }
