@@ -15,8 +15,8 @@ function EncryptPassword(plaintextPassword, callback) {
 
 module.exports = {
     /** Encrypt a password.
-     * @param {string} pass - The password you want to encrypt.
-     * @param {function} callback - The callback to trigger after encrypt the password.
+     * @param {String} pass - The password you want to encrypt.
+     * @param {Function} callback - The callback to trigger after encrypt the password.
      * @example <caption>How to encrypt the password `ThisStrongPassword`."</caption>
      * encryption.EncryptPassword("ThisStrongPassword", function (hash) { console.log(hash) };
      * // Qfsdf531qsdgfq5s4etqzg

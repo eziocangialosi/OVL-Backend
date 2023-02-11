@@ -241,34 +241,34 @@ function AddTracker(id,trackerName,topicRX,topicTX) {
 module.exports = {
     /**
      * Send a MQTT position request to the tracker based on his unique ID.
-     * @param {int} id Tracker unique ID.
-     * @param {function} callback Callback function to trigger.
+     * @param {Int} id Tracker unique ID.
+     * @param {Function} callback Callback function to trigger.
      */
     RequestTrackerPosition: function (id, callback) {
         RequestTrackerPosition(id, callback)
     },
     /**
      * Send a MQTT status request to the tracker based on his unique ID.
-     * @param {int} id Tracker unique ID.
-     * @param {function} callback Callback function to trigger.
+     * @param {Int} id Tracker unique ID.
+     * @param {Function} callback Callback function to trigger.
      */
     RequestTrackerStatus: function (id, callback) {
         RequestTrackerStatus(id, callback)
     },
     /**
      * Send a MQTT ping request to the tracker based on his unique ID.
-     * @param {int} id Tracker unique ID.
-     * @param {function} callback Callback function to trigger.
+     * @param {Int} id Tracker unique ID.
+     * @param {Function} callback Callback function to trigger.
      */
     PingTracker: function(id, callback) {
         PingTracker(id, callback)
     },
     /**
      * Add a new tracker to the MQTT module without restarting it.
-     * @param {int} id Tracker unique ID.
-     * @param {string} trackerName Tracker name.
-     * @param {string} topicRX MQTT Unique topicTX.
-     * @param {string} topicTX MQTT Unique topicRX.
+     * @param {Int} id Tracker unique ID.
+     * @param {String} trackerName Tracker name.
+     * @param {String} topicRX MQTT Unique topicTX.
+     * @param {String} topicTX MQTT Unique topicRX.
      */
     AddTracker: function(id,trackerName,topicRX,topicTX) {
         AddTracker(id,trackerName,topicRX,topicTX) 
