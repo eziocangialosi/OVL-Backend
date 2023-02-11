@@ -335,7 +335,7 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
                     sql = "DELETE FROM Pos_IOT WHERE id IN (" + temp + ")"
                     con.query(sql, function (err, result) {
                         if (err) {
-                            ToReturn.error = ERROR_CODES.ErrorSQLInjectError
+                            ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
                             throw err
                         }
                     });
