@@ -212,11 +212,12 @@ function RequestTrackerPosition(id, callback) {
                 debug.Print("Ask for pos")
                 client.publish(Topic, 'POS-RQ')
                 setTimeout(() => { // Wait 5s for tracker to respond.
-                    debug.Print("Verifying pos")
                     if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+                        debug.Print("Request timeout")
                         ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
                     }
                     else {
+                        debug.Print("Pos received")
                         ToReturn.position = GlobalTrackerList[Tracker].pos
                     }
                 }, 5000);
@@ -274,7 +275,6 @@ module.exports = {
         AddTracker(id,trackerName,topicRX,topicTX) 
     }
 }
-
 
 function DEBUG() {
     RequestTrackerStatus(3, function (data) {
