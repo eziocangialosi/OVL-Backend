@@ -96,7 +96,7 @@ const POST_Endpoint_HandleTrackerAddRequest = app.post('/iot/', (req, res) => { 
     api_handler.HandleTrackerAddRequest(req, res)
 })
 /**
- * Lazy endpoint for our Web developper.
+ * This PUT endpoint set the status of the tarcker in the DB.
  */
 const PUT_Endpoint_HandleSetStatus = app.put('/set/status/', (req, res) => { // Endpoint used to set tracker status. [TOFINISH]
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"PUT Request [HandleSetStatus]")
