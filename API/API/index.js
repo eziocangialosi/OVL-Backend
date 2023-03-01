@@ -96,9 +96,75 @@ const POST_Endpoint_HandleTrackerAddRequest = app.post('/iot/', (req, res) => { 
     api_handler.HandleTrackerAddRequest(req, res)
 })
 /**
- * This PUT endpoint take all the status fields for a tracker (req.body.id_iot, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge) : `/set/status/` and return a `Error` Object.
+ * Lazy endpoint for our Web developper.
  */
 const PUT_Endpoint_HandleSetStatus = app.put('/set/status/', (req, res) => { // Endpoint used to set tracker status. [TOFINISH]
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"PUT Request [HandleSetStatus]")
     api_handler.HandleSetStatus(req, res)
+})
+const Lazy_GET_Endpoint_ROOT = app.get('/lazy/', (req, res) => { // Redirect '/lazy/' to web interface. [DONE]
+    res.redirect('https://ovl.tech-user.fr:7070/') // Redirect to le Z web interface.
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleUserInfoRequest = app.get('/lazy/user/:mail/:password', function (req, res) { // Endpoint to get the token of the user. [NEED ADD TOKEN]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleUserInfoRequest]")
+    res.status(200).json({token: "SQDqsd416qsd4qs5dqfqsdqsd",error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleStatusRequest = app.get('/lazy/status/:id_iot/', (req, res) => { // Get Status
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleStatusRequest]")
+    res.status(200).json({status: {bat: 100, charge: true, vehiclechg: true, protection: true, ecomode: true, alarm: true, gps: true},error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleGetUserTrackers = app.get('/lazy/iot_list/:token/', (req, res) => { // Endpoint used to get the list of trackers from a user token. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetUserTrackers]")
+    res.status(200).json({trackers: [{name:"C15 1.1 E", id: 0},{name:"Dadia 1.5 DCI", id: 1}],user: "dev@ovl.tech-user.fr",error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleGetStatusList = app.get('/lazy/status_list/:token/', (req, res) => { // Return a user tracker list.
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetStatusList]")
+    res.status(200).json({status_list: [{bat: 100, charge: true, vehiclechg: true, protection: true, ecomode: true, alarm: true, gps: true},{bat: 10, charge: false, vehiclechg: false, protection: false, ecomode: false, alarm: false, gps: false}],error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleGetTrackerPositionActual = app.get('/lazy/position/now/:id', (req, res) => { // Endpoint to get the actual position of a tracker based on his ID. [TODO]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetTrackerPositionActual]")
+    res.status(200).json({position: {lat: 15.0, lon: 0.0, timestamp: 1000217640},error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleGetTrackerPositionHistory = app.get('/lazy/position/history/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetTrackerPositionHistory]")
+    res.status(200).json({history: [{lat: 0.0, lon: 15.0, timestamp: 1000217640},{lat: 15.0, lon: 0.0, timestamp: 1000217640}],error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_POST_Endpoint_HandleUserAddRequest = app.post('/lazy/user/', (req, res) => { // Endpoint to add a user. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"POST Request [HandleUserAddRequest]")
+    res.status(200).json({Topics:  {"topicTX": "topicTX_0", "topicRX": "topicRX_0"},TrackerId: 0,error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_POST_Endpoint_HandleTrackerAddRequest = app.post('/lazy/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"POST Request [HandleTrackerAddRequest]")
+    res.status(200).json({error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_PUT_Endpoint_HandleSetStatus = app.put('/lazy/set/status/', (req, res) => { // Endpoint used to set tracker status. [TOFINISH]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"PUT Request [HandleSetStatus]")
+    res.status(200).json({error: ERROR_CODES.ErrorOK})
 })

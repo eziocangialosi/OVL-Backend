@@ -22,9 +22,9 @@ module.exports = {
      */
     GetTime: function () {
         let date_ob = new Date();
-        let hours = date_ob.getHours();
-        let minutes = date_ob.getMinutes();
-        let seconds = date_ob.getSeconds();
+        let hours = ( "0" + date_ob.getHours()).slice(-2);
+        let minutes = ( "0" + date_ob.getMinutes()).slice(-2);
+        let seconds = ( "0" + date_ob.getSeconds()).slice(-2);
         return (hours + ":" + minutes + ":" + seconds)
     },
     /**
