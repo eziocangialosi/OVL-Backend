@@ -206,23 +206,32 @@ function RequestTrackerPosition(id, callback) {
     }
     else {
         mysql.GetTrackerLastPosition(GlobalTrackerList[Tracker].id, function (data) {
-            ToReturn = data
-            console.log(parseInt(ToReturn.now.timestamp) - date.GetTimestamp())
-            if((date.GetTimestamp() - parseInt(ToReturn.now.timestamp)) > config.TrackerCheckTime ) {
-                debug.Print("Ask for pos")
-                client.publish(Topic, 'POS-RQ')
-                setTimeout(() => { // Wait 5s for tracker to respond.
-                    if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
-                        debug.Print("Request timeout")
-                        ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
-                    }
-                    else {
-                        debug.Print("Pos received")
-                        ToReturn.position = GlobalTrackerList[Tracker].pos
-                    }
-                }, 5000);
+            if(data.error) {
+                callback(data.error)
             }
-            callback(ToReturn)
+            else {
+                ToReturn = data
+                if(data.notfound) {
+                    debug.Print("No position found in the database, requesting position...")
+                    client.publish(Topic, 'POS-RQ')
+                }
+                console.log(parseInt(ToReturn.now.timestamp) - date.GetTimestamp())
+                if((date.GetTimestamp() - parseInt(ToReturn.now.timestamp)) > config.TrackerCheckTime ) {
+                    debug.Print("Ask for pos")
+                    client.publish(Topic, 'POS-RQ')
+                    setTimeout(() => { // Wait 5s for tracker to respond.
+                        if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+                            debug.Print("Request timeout")
+                            ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+                        }
+                        else {
+                            debug.Print("Pos received")
+                            ToReturn.position = GlobalTrackerList[Tracker].pos
+                        }
+                    }, 5000);
+                }
+                callback(ToReturn)
+            }
         })
     }
 }

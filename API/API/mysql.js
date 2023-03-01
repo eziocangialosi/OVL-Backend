@@ -142,7 +142,7 @@ function GetTrackerLastPosition(id_iot, callback) {
         }
         else {
             if (result[0] == undefined) {
-                ToReturn.error = ERROR_CODES.ErrorSQLSelectError
+                ToReturn.notfound = true
             }
             else {
                 ToReturn.now = result[0]
@@ -314,6 +314,7 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
     var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
     var temp = ""
     con.query(sql, function (err, result) {
+        debug.Print(sql)
         if (err) {
             ToReturn.error = ERROR_CODES.ErrorSQLInjectError
             throw err
@@ -328,10 +329,11 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
                 else {
                     for (let i = 0; i < result.length; i++) {
                         if (i != 0) {
-                            temp = temp + + ","
+                            temp = temp + ","
                         }
                         temp = temp + result[i].id
                     }
+                    debug.Print(temp)
                     sql = "DELETE FROM Pos_IOT WHERE id IN (" + temp + ")"
                     con.query(sql, function (err, result) {
                         if (err) {
