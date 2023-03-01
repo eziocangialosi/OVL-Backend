@@ -210,22 +210,22 @@ function RequestTrackerPosition(id, callback) {
             else {
                 ToReturn = data
                 if(data.notfound) {
-                    debug.Print("No position found in the database, requesting position...")
+                    debug.Print("No position found in the database for tracker id ["+Tracker+"], requesting position...")
                     client.publish(Topic, 'POS-RQ')
                 }
                 else {
-                    str = Math.abs(date.GetTimestamp() - parseInt(ToReturn.now.timestamp))
-                    debug.Print("Time from last GPS pos --> " + str)
-                    if(Math.abs(date.GetTimestamp() - parseInt(ToReturn.now.timestamp)) > config.TrackerCheckTime ) {
-                        debug.Print("Ask for pos")
+                    LastGPSTime = Math.abs(date.GetTimestamp() - parseInt(ToReturn.now.timestamp))
+                    debug.Print("Time from last GPS pos for tracker id ["+Tracker+"] --> " + (LastGPSTime))
+                    if(LastGPSTime > config.TrackerCheckTime ) {
+                        debug.Print("Ask for pos for tracker id ["+Tracker+"]")
                         client.publish(Topic, 'POS-RQ')
                         setTimeout(() => { // Wait 5s for tracker to respond.
                             if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
-                                debug.Print("Request timeout")
+                                debug.Print("GPS Position request for tracker id ["+Tracker+"] expired.")
                                 ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
                             }
                             else {
-                                debug.Print("Pos received")
+                                debug.Print("GPS Position request for tracker id ["+Tracker+"] received.")
                                 ToReturn.position = GlobalTrackerList[Tracker].pos
                             }
                         }, 5000);
@@ -287,7 +287,6 @@ module.exports = {
 }
 
 function DEBUG() {
-    debug.Print(date.GetTimestamp())
     RequestTrackerStatus(3, function (data) {
         //console.log(data)
     })

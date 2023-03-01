@@ -28,7 +28,7 @@ function handleDisconnect() { // This thing reconnect the database.
         }
     });
 }
-handleDisconnect();
+handleDisconnect(); // This handle any disconnect from the SQL server.
 
 function CheckUserCredentials(mail, callback) {
     ToReturn = new Object();
@@ -314,8 +314,6 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
     var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
     var temp = ""
     con.query(sql, function (err, result) {
-        debug.Print(sql)
-        console.log(result)
         if (err) {
             console.log(err)
             ToReturn.error = ERROR_CODES.ErrorSQLInjectError
