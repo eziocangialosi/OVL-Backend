@@ -322,7 +322,7 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
             throw err
         }
         else {
-            sql = "SELECT * FROM Pos_IOT WHERE id_iot = '" + id + "' ORDER BY id DESC LIMIT 20"; // This SQL request keep only the last 20 records in the database
+            sql = "SELECT * FROM Pos_IOT WHERE id_iot = '" + id + "' ORDER BY id DESC LIMIT "+config.QuantityOfPosPerTracker; // This SQL request keep only the last n records in the database
             con.query(sql, function (err, result) {
                 if (err) {
                     ToReturn.error = ERROR_CODES.ErrorSQLInjectError
@@ -335,13 +335,13 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
                         }
                         temp = temp + result[i].id
                     }
-                //     sql = "DELETE FROM Pos_IOT WHERE id IN (" + temp + ")"
-                //     con.query(sql, function (err, result) {
-                //         if (err) {
-                //             ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
-                //             throw err
-                //         }
-                //     });
+                    sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + temp + ") AND id_iot = '" + id + "'";
+                    con.query(sql, function (err, result) {
+                        if (err) {
+                            ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
+                            throw err
+                        }
+                    });
                 }
             });
         }
