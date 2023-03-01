@@ -194,7 +194,7 @@ function AddUserToDb(mail, password, token, callback) {
         }
         else {
             if (result[0] == undefined) {
-                var sql = "INSERT INTO users (email, password, token) VALUES ('" + mail + "', '" + password + "', '" + token + "')";
+                var sql = "INSERT INTO users (email, password, token) VALUES ('" + mail + "', '" + password + "', '" + token + "')"
                 con.query(sql, function (err, result) {
                     if (err) {
                         ToReturn.error = ERROR_CODES.ErrorSQLInjectError
@@ -315,7 +315,9 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
     var temp = ""
     con.query(sql, function (err, result) {
         debug.Print(sql)
+        console.log(result)
         if (err) {
+            console.log(err)
             ToReturn.error = ERROR_CODES.ErrorSQLInjectError
             throw err
         }
@@ -333,14 +335,13 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
                         }
                         temp = temp + result[i].id
                     }
-                    debug.Print(temp)
-                    sql = "DELETE FROM Pos_IOT WHERE id IN (" + temp + ")"
-                    con.query(sql, function (err, result) {
-                        if (err) {
-                            ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
-                            throw err
-                        }
-                    });
+                //     sql = "DELETE FROM Pos_IOT WHERE id IN (" + temp + ")"
+                //     con.query(sql, function (err, result) {
+                //         if (err) {
+                //             ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
+                //             throw err
+                //         }
+                //     });
                 }
             });
         }

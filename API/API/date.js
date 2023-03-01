@@ -29,10 +29,10 @@ module.exports = {
     },
     /**
      * Get current timestamp
-     * @returns {int} Current timestamp
+     * @returns {int} Current timestamp converted in s.
      */
     GetTimestamp: function() {
-        return Date.now();
+        return  Math.round(Date.now() / 1000);
     },
     /**
      * Wait for specified amount of time 

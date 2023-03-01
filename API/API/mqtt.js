@@ -2,14 +2,13 @@
  * @module MQTT
  * @description This module handle the communication with all the trackers with the help of the MQTT protocol.
  */
+const config = require('./config')
 const mqtt = require('mqtt')
 const date = require('./date')
 const { ERROR_CODES } = require('./error_codes')
 const mysql = require('./mysql')
-const client = mqtt.connect('mqtt://ovl.tech-user.fr:6868')
+const client = mqtt.connect(config.MQTT_Server)
 const debug = require('./debug')
-const config = require('./config')
-
 /**
  * Array of all `TrackerDetails` Objects.
  */
@@ -64,7 +63,7 @@ function CheckTrackersPingResponse() {
  * This listener take the `topic` and the `message` of MQTT frames, and trigger the corresponding actions.
  */
 const MQTT_Listener = client.on('message', function (topic, message) {
-    debug.Print("Received MQTT message : " + message.toString())
+    debug.Print("Received MQTT message from ["+topic+"] --> " + message.toString())
     topic = topic.replace('TX', 'RX') // Replace topic type to respond on other topic.
     if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish(topic, 'SYN-ACK') // Respond to the message.
@@ -119,8 +118,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].pos = TrackerPosition
-                mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  date.GetTimestamp(), function(data) {
-                    console.log(data)
+                mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  GlobalTrackerList[i].timestamp, function(data) {
                 })
                 break
             }
@@ -206,7 +204,7 @@ function RequestTrackerPosition(id, callback) {
     }
     else {
         mysql.GetTrackerLastPosition(GlobalTrackerList[Tracker].id, function (data) {
-            if(data.error) {
+            if(data.error.Code != 0) {
                 callback(data.error)
             }
             else {
@@ -215,22 +213,25 @@ function RequestTrackerPosition(id, callback) {
                     debug.Print("No position found in the database, requesting position...")
                     client.publish(Topic, 'POS-RQ')
                 }
-                console.log(parseInt(ToReturn.now.timestamp) - date.GetTimestamp())
-                if((date.GetTimestamp() - parseInt(ToReturn.now.timestamp)) > config.TrackerCheckTime ) {
-                    debug.Print("Ask for pos")
-                    client.publish(Topic, 'POS-RQ')
-                    setTimeout(() => { // Wait 5s for tracker to respond.
-                        if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
-                            debug.Print("Request timeout")
-                            ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
-                        }
-                        else {
-                            debug.Print("Pos received")
-                            ToReturn.position = GlobalTrackerList[Tracker].pos
-                        }
-                    }, 5000);
+                else {
+                    str = Math.abs(date.GetTimestamp() - parseInt(ToReturn.now.timestamp))
+                    debug.Print("Time from last GPS pos --> " + str)
+                    if(Math.abs(date.GetTimestamp() - parseInt(ToReturn.now.timestamp)) > config.TrackerCheckTime ) {
+                        debug.Print("Ask for pos")
+                        client.publish(Topic, 'POS-RQ')
+                        setTimeout(() => { // Wait 5s for tracker to respond.
+                            if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
+                                debug.Print("Request timeout")
+                                ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+                            }
+                            else {
+                                debug.Print("Pos received")
+                                ToReturn.position = GlobalTrackerList[Tracker].pos
+                            }
+                        }, 5000);
+                    }
                 }
-                callback(ToReturn)
+            callback(ToReturn)
             }
         })
     }
@@ -286,6 +287,7 @@ module.exports = {
 }
 
 function DEBUG() {
+    debug.Print(date.GetTimestamp())
     RequestTrackerStatus(3, function (data) {
         //console.log(data)
     })
