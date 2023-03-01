@@ -26,7 +26,6 @@ app.use(cors({ // This setup the REST API
     origin: "*", // Allow Redirection for mobile Apps.
     methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'] // Allow all of this methods to all API endpoints.
 }));
-
 /**
  * Create the REST API Server, listen on port setup in `config.Server_Port`.
  */
@@ -73,7 +72,6 @@ const GET_Endpoint_HandleGetStatusList = app.get('/status_list/:token/', (req, r
  */
 const GET_Endpoint_HandleGetTrackerPositionActual = app.get('/position/now/:id', (req, res) => { // Endpoint to get the actual position of a tracker based on his ID. [TODO]
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetTrackerPositionActual]")
-    //res.status(200).json({position: {lon: 0.0, lat: 0.0}, error : ERROR_CODES.ErrorOK})
     api_handler.HandleGetTrackerPositionActual(req, res) // Trigger the Position request.
 })
 /**

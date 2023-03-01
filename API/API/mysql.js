@@ -312,7 +312,7 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
-    var temp = ""
+    var IDToRemove = ""
     con.query(sql, function (err, result) {
         if (err) {
             console.log(err)
@@ -329,11 +329,11 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
                 else {
                     for (let i = 0; i < result.length; i++) {
                         if (i != 0) {
-                            temp = temp + ","
+                            IDToRemove = IDToRemove + ","
                         }
-                        temp = temp + result[i].id
+                        IDToRemove = IDToRemove + result[i].id
                     }
-                    sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + temp + ") AND id_iot = '" + id + "'";
+                    sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + IDToRemove + ") AND id_iot = '" + id + "'";
                     con.query(sql, function (err, result) {
                         if (err) {
                             ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
