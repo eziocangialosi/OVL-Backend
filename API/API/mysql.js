@@ -109,6 +109,21 @@ function GetTrackerStatus(topic, callback) {
             }
             else {
                 ToReturn.status = result[0]
+                con.query("SELECT safeZoneDiam FROM CredentialsTracker WHERE id = '"+result[0].id_iot+"'", (err, result2) => {
+                    if (err) {
+                        console.error(err)
+                        ToReturn.error = err
+                    }
+                    else {
+                        if (result2[0] == undefined) {
+                            ToReturn.error = ERROR_CODES.ErrorSQLSelectError
+                        }
+                        else {
+                            ToReturn.status.safezone = result2[0].safeZoneDiam
+                        }
+                    }
+                    callback(ToReturn);
+                });
             }
         }
         callback(ToReturn);

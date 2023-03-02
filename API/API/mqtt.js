@@ -70,8 +70,8 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     }
     else if (message.toString().startsWith("STG-RQ")) {
         mysql.GetTrackerStatus(topic, function (data) {
-            //var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+",15.0"
-            var to_send = "STG=" + 1 + "," + 0 + "," + 0 + ",15"
+            var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+",15.0"
+            //var to_send = "STG=" + 1 + "," + 0 + "," + 0 + ",15"
             client.publish(topic, to_send)
         })
     }
@@ -126,6 +126,14 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
+        debug.Print("Received Alarm in "+topic)
+        for (let i = 0; i < GlobalTrackerList.length; i++) {
+            if (GlobalTrackerList[i].topicRX == topic) {
+                GlobalTrackerList[i].timestamp = date.GetTimestamp()
+                GlobalTrackerList[i].status.alarm = 1
+                break
+            }
+        }
         client.publish(topic, 'ALM-ACK') // Respond to the message.
     }
 
@@ -306,6 +314,6 @@ function DEBUG() {
         //console.log(data)
     })
     RequestTrackerPosition(3, function (data) {
-        console.log(data)
+        //console.log(data)
     })
 }
