@@ -9,6 +9,7 @@ const { ERROR_CODES } = require('./error_codes')
 const mysql = require('./mysql')
 const client = mqtt.connect(config.MQTT_Server)
 const debug = require('./debug')
+const discord = require('./discord')
 /**
  * Array of all `TrackerDetails` Objects.
  */
@@ -55,8 +56,14 @@ function CheckTrackersPingResponse() {
         if (GlobalTrackerList[i].timestamp == 0) {
             OfflineDevices++
         }
+        else {
+            RequestTrackerPosition(GlobalTrackerList[i].id, function(data)
+            {})
+        }
     }
     debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
+    discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
+    
 }
 
 /**
@@ -70,7 +77,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     }
     else if (message.toString().startsWith("STG-RQ")) {
         mysql.GetTrackerStatus(topic, function (data) {
-            var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+",15.0"
+            var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+","+data.status.safeZoneDiam
             //var to_send = "STG=" + 1 + "," + 0 + "," + 0 + ",15"
             client.publish(topic, to_send)
         })
@@ -126,18 +133,19 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
-        debug.Print("Received Alarm in "+topic)
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].status.alarm = 1
+                discord.SendWarningWebhook("Tracker Monitor","Unauthorized move","Unauthorized move of the vehicle with the tracker \"**"+GlobalTrackerList[i].name+"**\""+"\n**You can check the position __[here]("+config.AdministrationURL+"iot/historique.php?iot="+GlobalTrackerList[i].id+")__**")
+                debug.Print("Received Alarm from the tracker ["+GlobalTrackerList[i].name+"]")
                 break
             }
         }
         client.publish(topic, 'ALM-ACK') // Respond to the message.
     }
 
-    else if (message.toString().startsWith("SFZ=")) { // Position error for the tracker.
+    else if (message.toString().startsWith("SFZ=")) { // Retrieve Safezone position.
         lat = message.toString().split('=')[1].split(',')[0]
         lon = message.toString().split(',')[1]
         id = 0
@@ -310,10 +318,10 @@ module.exports = {
 }
 
 function DEBUG() {
-    RequestTrackerStatus(3, function (data) {
-        //console.log(data)
-    })
-    RequestTrackerPosition(3, function (data) {
-        //console.log(data)
-    })
+    // RequestTrackerStatus(3, function (data) {
+    //     //console.log(data)
+    // })
+    // RequestTrackerPosition(3, function (data) {
+    //     //console.log(data)
+    // })
 }
