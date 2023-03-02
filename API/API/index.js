@@ -11,6 +11,7 @@ const cors = require('cors') // Needed to sertup REST API for mobile use.
 const debug = require('./debug') // Debug function.
 const api_handler = require('./API_Handler');
 const { ERROR_CODES } = require('./error_codes');
+const discord = require('./discord')
 const app = express() // Create the REST API
 const key = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Key));
 const cert = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Cert));
@@ -31,13 +32,14 @@ app.use(cors({ // This setup the REST API
  */
 const Server = https.createServer({ key, cert }, app).listen(config.Server_Port, () => { // Create secure HTTPS REST API
     debug.Print("Server started and ready to respond.")
+    discord.SendSucesssWebhook("API","REST API Status","Server started and ready to respond.")
 })
 
 /**
  * The root GET endpoint is used to redirect to the web interface.
  */
 const GET_Endpoint_ROOT = app.get('/', (req, res) => { // Redirect '/' to web interface. [DONE]
-    res.redirect('https://ovl.tech-user.fr:7070/') // Redirect to le Z web interface.
+    res.redirect(config.AdministrationURL) // Redirect to le Z web interface.
 })
 /**
  * This GET endpoint take a mail and a password : `/user/:mail/:password`.

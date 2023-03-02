@@ -10,6 +10,7 @@ const { ERROR_CODES } = require('./error_codes');
 const config = require('./config')
 var con = mysql.createConnection(config.Database_Config);
 const date = require('./date')
+const discord = require('./discord')
 function handleDisconnect() { // This thing reconnect the database.
     con = mysql.createConnection(config.Database_Config);
     con.connect(function onConnect(err) {   // The server is either down
@@ -19,6 +20,7 @@ function handleDisconnect() { // This thing reconnect the database.
         }                                           // to avoid a hot loop, and to allow our node script to
         else {
             debug.Print("Successfully connected to the SQL Database.")
+            discord.SendSucesssWebhook("Database","Connection","Successfully connected to the SQL Database.")
         }
     });                                             // process asynchronous requests in the meantime.
     // display a 503 error.
