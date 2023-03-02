@@ -308,7 +308,7 @@ function GetAllTrackersTopics(callback) {
     });
 }
 
-function AddPositionOfTrackerToDb(pos, id, date, callback) {
+function AddPositionOfTrackerToDb(pos, id, date, alarm, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     var sql = "INSERT INTO Pos_IOT (lat, lon, id_iot,timestamp) VALUES ('" + pos.lat + "', '" + pos.lon + "', '" + id + "', '" + date + "')";
@@ -320,28 +320,30 @@ function AddPositionOfTrackerToDb(pos, id, date, callback) {
             throw err
         }
         else {
-            sql = "SELECT * FROM Pos_IOT WHERE id_iot = '" + id + "' ORDER BY id DESC LIMIT "+config.QuantityOfPosPerTracker; // This SQL request keep only the last n records in the database
-            con.query(sql, function (err, result) {
-                if (err) {
-                    ToReturn.error = ERROR_CODES.ErrorSQLInjectError
-                    throw err
-                }
-                else {
-                    for (let i = 0; i < result.length; i++) {
-                        if (i != 0) {
-                            IDToRemove = IDToRemove + ","
-                        }
-                        IDToRemove = IDToRemove + result[i].id
+            if(alarm == 0) {
+                sql = "SELECT * FROM Pos_IOT WHERE id_iot = '" + id + "' ORDER BY id DESC LIMIT "+config.QuantityOfPosPerTracker; // This SQL request keep only the last n records in the database
+                con.query(sql, function (err, result) {
+                    if (err) {
+                        ToReturn.error = ERROR_CODES.ErrorSQLInjectError
+                        throw err
                     }
-                    sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + IDToRemove + ") AND id_iot = '" + id + "'";
-                    con.query(sql, function (err, result) {
-                        if (err) {
-                            ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
-                            throw err
+                    else {
+                        for (let i = 0; i < result.length; i++) {
+                            if (i != 0) {
+                                IDToRemove = IDToRemove + ","
+                            }
+                            IDToRemove = IDToRemove + result[i].id
                         }
-                    });
-                }
-            });
+                        sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + IDToRemove + ") AND id_iot = '" + id + "'";
+                        con.query(sql, function (err, result) {
+                            if (err) {
+                                ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
+                                throw err
+                            }
+                        });
+                    }
+                });
+            }
         }
         callback(ToReturn)
     });
@@ -458,7 +460,7 @@ module.exports = { // Export funtion for other file to use it.
      * @param {(Int)} date - The timestamp of the position.
      * @param {Function} callback - The callback to trigger adding the position.
      */
-    AddPositionOfTrackerToDb: function (pos, id, date, callback) {
-        AddPositionOfTrackerToDb(pos, id, date, callback)
+    AddPositionOfTrackerToDb: function (pos, id, date, alarm ,callback) {
+        AddPositionOfTrackerToDb(pos, id, date, alarm,callback)
     }
 }

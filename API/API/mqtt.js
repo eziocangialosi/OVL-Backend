@@ -118,7 +118,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].pos = TrackerPosition
-                mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  GlobalTrackerList[i].timestamp, function(data) {
+                mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  GlobalTrackerList[i].timestamp,GlobalTrackerList[i].status.alarm, function(data) {
                 })
                 break
             }
