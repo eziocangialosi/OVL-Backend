@@ -82,18 +82,11 @@ const GET_Endpoint_HandleGetTrackerPositionHistory = app.get('/position/history/
     api_handler.HandleGetTrackerPositionHistory(req, res)
 })
 /**
- * This POST endpoint take the mail and the password of the new user (req.body.mail, req.body.password) : `/user/` and return an `Error` Object.
+ * This GET endpoint take the unique ID of the tracker : `/position/safezone/:id/` and return lat lon and diameter of the Safezone.
  */
-const POST_Endpoint_HandleUserAddRequest = app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
-    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"POST Request [HandleUserAddRequest]")
-    api_handler.HandleUserAddRequest(req, res)
-})
-/**
- * This POST endpoint take the auth token of the user and the name of the new tracker (req.body.token, req.body.name) : `/iot/` and return a `Topics` Object and the ID of the Tracker.
- */
-const POST_Endpoint_HandleTrackerAddRequest = app.post('/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
-    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"POST Request [HandleTrackerAddRequest]")
-    api_handler.HandleTrackerAddRequest(req, res)
+const GET_Endpoint_HandleGetSafezone = app.get('/position/safezone/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetTrackerHandleGetSafezone]")
+    res.status(200).json({safezone: {lat: 0.0, lon: 15.0},error: ERROR_CODES.ErrorOK})
 })
 /**
  * This PUT endpoint set the status of the tarcker in the DB.
@@ -167,4 +160,11 @@ const Lazy_POST_Endpoint_HandleTrackerAddRequest = app.post('/lazy/iot/', (req, 
 const Lazy_PUT_Endpoint_HandleSetStatus = app.put('/lazy/set/status/', (req, res) => { // Endpoint used to set tracker status. [TOFINISH]
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"PUT Request [HandleSetStatus]")
     res.status(200).json({error: ERROR_CODES.ErrorOK})
+})
+/**
+ * Lazy endpoint for our Web developper.
+ */
+const Lazy_GET_Endpoint_HandleGetSafezone = app.get('/lazy/position/safezone/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetTrackerHandleGetSafezone]")
+    res.status(200).json({safezone: {lat: 0.0, lon: 15.0},error: ERROR_CODES.ErrorOK})
 })

@@ -128,6 +128,21 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
         client.publish(topic, 'ALM-ACK') // Respond to the message.
     }
+
+    else if (message.toString().startsWith("SFZ=")) { // Position error for the tracker.
+        lat = message.toString().split('=')[1].split(',')[0]
+        lon = message.toString().split(',')[1]
+        id = 0
+        for (let i = 0; i < GlobalTrackerList.length; i++) {
+            if (GlobalTrackerList[i].topicRX == topic) {
+                id = GlobalTrackerList[i].id
+                break
+            }
+        }
+        mysql.SetTrackerSafezone(id,lat,lon,function(data) {
+            
+        })
+    }
 })
 
 function RequestTrackerStatus(id, callback) {

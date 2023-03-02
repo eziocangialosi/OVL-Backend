@@ -14,9 +14,12 @@ function handleDisconnect() { // This thing reconnect the database.
     con = mysql.createConnection(config.Database_Config);
     con.connect(function onConnect(err) {   // The server is either down
         if (err) {                                  // or restarting (takes a while sometimes).
-            console.error('error when connecting to db:', err);
+            console.error('error when connecting to db --> ', err);
             setTimeout(handleDisconnect, 10000);    // We Introduce a delay before attempting to reconnect,
         }                                           // to avoid a hot loop, and to allow our node script to
+        else {
+            debug.Print("Successfully connected to the SQL Database.")
+        }
     });                                             // process asynchronous requests in the meantime.
     // display a 503 error.
     con.on('error', function onError(err) {
@@ -230,7 +233,7 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
                     }
                     else { // If nothing fail.
                         TrackerId = result[0].ID + 1 // As the result only count the existing entries we add 1.
-                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user) VALUES ('" + trackerName + "', '" + "password" + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "')", function (err, result) {
+                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user, safeZoneDiam, lonSfz, latSfz) VALUES ('" + trackerName + "', '" + "password" + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "','15','0.0','0.0')", function (err, result) {
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
@@ -349,6 +352,62 @@ function AddPositionOfTrackerToDb(pos, id, date, alarm, callback) {
     });
 }
 
+function GetTrackerSafezone(id, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("SELECT safeZoneDiam, lonSfz, latSfz FROM CredentialsTracker WHERE id = '"+id+"'", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] != undefined) {
+                ToReturn.lat = result[0].latSfz
+                ToReturn.lon = result[0].lonSfz
+                ToReturn.diameter = result[0].safeZoneDiam
+            }
+
+            else {
+                ToReturn.error = ERROR_CODES.ErrorUserHasNoTracker
+            }
+        }
+        callback(ToReturn)
+    });
+}
+
+function SetTrackerSafezone(id,lat,lon, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("UPDATE CredentialsTracker SET lonSfz = '"+lat+"', latSfz = '"+lon+"' WHERE id = '"+id+"'", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] != undefined) {
+                ToReturn.lat = result[0].latSfz
+                ToReturn.lon = result[0].lonSfz
+                ToReturn.diameter = result[0].safeZoneDiam
+            }
+
+            else {
+                ToReturn.error = ERROR_CODES.ErrorUserHasNoTracker
+            }
+        }
+        callback(ToReturn)
+    });
+}
+
+function AddRequestLog(request) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("INSERT INTO LogRq (description,timestamp) VALUES ('"+request+"','"+date.GetTimestamp()+"')", (err, result) => {
+        if (err) {
+            console.error(err)
+        }
+    });
+}
+
 module.exports = { // Export funtion for other file to use it.
     /**
      * Fetch the user information from the user auth token (id).
@@ -462,5 +521,30 @@ module.exports = { // Export funtion for other file to use it.
      */
     AddPositionOfTrackerToDb: function (pos, id, date, alarm ,callback) {
         AddPositionOfTrackerToDb(pos, id, date, alarm,callback)
+    },
+    /**
+     * Get the safezone of a tracker from his id.
+     * @param {(Int)} id - The unique ID of the tracker.
+     * @param {Function} callback - The callback to trigger after getting the Safezone.
+     */
+    GetTrackerSafezone: function (id, callback) {
+        GetTrackerSafezone(id, callback)
+    },
+    /**
+     * Set the safezone of a tracker from his id.
+     * @param {(Int)} id - The unique ID of the tracker.
+     * @param {(Float)} lat - The unique ID of the tracker.
+     * @param {(Float)} lon - The unique ID of the tracker.
+     * @param {Function} callback - The callback to trigger after getting the Safezone.
+     */
+    SetTrackerSafezone: function (id,lat,lon, callback) {
+        SetTrackerSafezone(id,lat,lon, callback)
+    },
+    /**
+     * Add request log.
+     * @param {(String)} request - The description of the request.
+     */
+    AddRequestLog: function (request) {
+        AddRequestLog(request)
     }
 }
