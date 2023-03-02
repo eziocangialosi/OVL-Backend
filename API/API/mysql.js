@@ -425,6 +425,16 @@ function AddRequestLog(request) {
     });
 }
 
+function AddUserLogin(user) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("INSERT INTO logUser (id_user,timestamp) VALUES ('"+user+"','"+date.GetTimestamp()+"')", (err, result) => {
+        if (err) {
+            console.error(err)
+        }
+    });
+}
+
 module.exports = { // Export funtion for other file to use it.
     /**
      * Fetch the user information from the user auth token (id).
@@ -563,5 +573,12 @@ module.exports = { // Export funtion for other file to use it.
      */
     AddRequestLog: function (request) {
         AddRequestLog(request)
+    },
+    /**
+     * Add user log.
+     * @param {(Int)} user - The user id who login.
+     */
+    AddUserLogin: function (user) {
+        AddUserLogin(user)
     }
 }
