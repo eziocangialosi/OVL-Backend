@@ -240,6 +240,7 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
         if (err) {
             console.error(err)
             ToReturn.error = err
+            callback(ToReturn)
         }
         else {
             if (result[0] != undefined) {
@@ -248,6 +249,7 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
                     if (err) {
                         console.error(err)
                         ToReturn.error = err
+                        callback(ToReturn)
                     }
                     else { // If nothing fail.
                         TrackerId = result[0].ID + 1 // As the result only count the existing entries we add 1.
@@ -255,6 +257,7 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
+                                callback(ToReturn)
                             }
                             else { // If nothing fail.
                                 con.query("INSERT INTO Status_IOT (id_iot,timestamp) VALUES ('" + TrackerId + "', '" + date.GetTimestamp() + "')", function (err, result) {
@@ -269,6 +272,7 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
                                         }
                                         ToReturn.TrackerId = TrackerId
                                     }
+                                    callback(ToReturn)
                                 });
                             }
                         });
@@ -277,9 +281,10 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
             }
             else {
                 ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid // The provided token seams to be wrong so we return the error code.
+                callback(ToReturn)
             }
         }
-        callback(ToReturn)
+        
     });
 }
 

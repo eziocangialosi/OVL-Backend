@@ -91,6 +91,20 @@ const GET_Endpoint_HandleGetSafezone = app.get('/position/safezone/:id/', (req, 
     res.status(200).json({safezone: {lat: 0.0, lon: 15.0},error: ERROR_CODES.ErrorOK})
 })
 /**
+ * This POST endpoint add a new user to the database.
+ */
+const POST_Endpoint_HandleUserAddRequest = app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"POST Request [HandleUserAddRequest]")
+    api_handler.HandleUserAddRequest(req,res)
+})
+/**
+ * This POST endpoint add a new tracker in the database.
+ */
+const POST_Endpoint_HandleTrackerAddRequest = app.post('/iot/', (req, res) => { // Endpoint to add a iot. [DONE]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"POST Request [HandleTrackerAddRequest]")
+    api_handler.HandleTrackerAddRequest(req,res)
+})
+/**
  * This PUT endpoint set the status of the tarcker in the DB.
  */
 const PUT_Endpoint_HandleSetStatus = app.put('/set/status/', (req, res) => { // Endpoint used to set tracker status. [TOFINISH]
