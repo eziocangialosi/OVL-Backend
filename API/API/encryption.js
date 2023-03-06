@@ -24,5 +24,4 @@ module.exports = {
     EncryptPassword: function (pass, callback) {
         EncryptPassword(pass, callback)
     },
-
 }
