@@ -108,10 +108,11 @@ function GetTrackerStatus(topic, callback) {
         else {
             if (result[0] == undefined) {
                 ToReturn.error = ERROR_CODES.ErrorSQLSelectError
+                callback(ToReturn);
             }
             else {
                 ToReturn.status = result[0]
-                con.query("SELECT safeZoneDiam FROM CredentialsTracker WHERE id = '"+result[0].id_iot+"'", (err, result2) => {
+                con.query("SELECT safeZoneDiam FROM CredentialsTracker WHERE id = '"+ToReturn.status.id_iot+"'", (err, result2) => {
                     if (err) {
                         console.error(err)
                         ToReturn.error = err
@@ -123,12 +124,12 @@ function GetTrackerStatus(topic, callback) {
                         else {
                             ToReturn.status.safezone = result2[0].safeZoneDiam
                         }
+                        callback(ToReturn);
                     }
-                    callback(ToReturn);
                 });
             }
         }
-        callback(ToReturn);
+        
     });
 }
 

@@ -46,7 +46,6 @@ client.on('connect', function () {
         }
     })
 })
-
 /**
  * Display in the console the number of UP trackers with the help of `GlobalTrackerList`, this function is called on the module init but can be recalled at convenience.
  */
@@ -63,7 +62,6 @@ function CheckTrackersPingResponse() {
     }
     debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
     discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
-    
 }
 
 /**
@@ -77,7 +75,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     }
     else if (message.toString().startsWith("STG-RQ")) {
         mysql.GetTrackerStatus(topic, function (data) {
-            var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+","+data.status.safeZoneDiam
+            var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+","+data.status.safezone
             //var to_send = "STG=" + 1 + "," + 0 + "," + 0 + ",15"
             client.publish(topic, to_send)
         })
@@ -144,7 +142,6 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         }
         client.publish(topic, 'ALM-ACK') // Respond to the message.
     }
-
     else if (message.toString().startsWith("SFZ=")) { // Retrieve Safezone position.
         lat = message.toString().split('=')[1].split(',')[0]
         lon = message.toString().split(',')[1]
@@ -216,9 +213,9 @@ function PingTracker(id, callback) {
 }
 
 function RequestTrackerPosition(id, callback) {
-    var Tracker = undefined
-    var OldTimestamp
-    var Topic = undefined
+    var Tracker = undefined // The Tracker with the id requested.
+    var OldTimestamp = undefined // The timestamp used to check if the tarcker respond.
+    var Topic = undefined // RX Topic of the tracker.
     ToReturn = new Object()
     ToReturn.error = ERROR_CODES.ErrorOK
     for (let i = 0; i < GlobalTrackerList.length; i++) {
@@ -229,7 +226,7 @@ function RequestTrackerPosition(id, callback) {
             break
         }
     }
-    if (Tracker == undefined) {
+    if (Tracker == undefined) { // In the case of a an unknown tracker we return an error.
         ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
         callback(ToReturn)
     }
@@ -318,10 +315,12 @@ module.exports = {
 }
 
 function DEBUG() {
-    // RequestTrackerStatus(3, function (data) {
-    //     //console.log(data)
-    // })
-    // RequestTrackerPosition(3, function (data) {
-    //     //console.log(data)
-    // })
+    if(config.Debug) {
+        // RequestTrackerStatus(3, function (data) {
+        //     //console.log(data)
+        // })
+        // RequestTrackerPosition(3, function (data) {
+        //     //console.log(data)
+        // })
+    }
 }
