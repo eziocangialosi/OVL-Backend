@@ -279,7 +279,6 @@ function AddTracker(id,trackerName,topicRX,topicTX,pass) {
     const AddTrackerCredentials = spawn("mosquitto_passwd", ["-b","mqtt-password",trackerName,pass]);
     const CopyPasswordFile = spawn("cp",["mosquitto_passwd","/etc/mosquitto/mosquitto_passwd"]);
     const ReloadMQTTConfig = spawn("systemctl", ["reload","mosquitto.service"]);
-
 }
 
 function PingLoopCheck() {
@@ -326,9 +325,10 @@ module.exports = {
      * @param {String} trackerName Tracker name.
      * @param {String} topicRX MQTT Unique topicTX.
      * @param {String} topicTX MQTT Unique topicRX.
+     * @param {String} password Tracker unique password.
      */
-    AddTracker: function(id,trackerName,topicRX,topicTX,pass) {
-        AddTracker(id,trackerName,topicRX,topicTX,pass) 
+    AddTracker: function(id,trackerName,topicRX,topicTX,password) {
+        AddTracker(id,trackerName,topicRX,topicTX,password) 
     }
 }
 
