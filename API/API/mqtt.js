@@ -7,13 +7,17 @@ const mqtt = require('mqtt')
 const date = require('./date')
 const { ERROR_CODES } = require('./error_codes')
 const mysql = require('./mysql')
-const client = mqtt.connect(config.MQTT_Server)
+const { spawn } = require("child_process");
+const WaitForMqttToStart = spawn("cp",["mosquitto_passwd","/etc/mosquitto/mosquitto_passwd"]);
+const ReloadMQTTConfig = spawn("systemctl", ["reload","mosquitto.service"]);
+const client = mqtt.connect(config.MQTT.Server,{"username": config.MQTT.Username, "password": config.MQTT.Password})
 const debug = require('./debug')
 const discord = require('./discord')
+
 /**
  * Array of all `TrackerDetails` Objects.
  */
-var GlobalTrackerList = new Array();
+var GlobalTrackerList = new Array(); // Used to store all trackers data in RAM.
 /**
  * This listener start on successful connection to the MQTT broker, and launch the subscribe of all trackers topics.
  */
@@ -52,7 +56,6 @@ client.on('connect', function () {
                 discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
                 debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
                 DEBUG()
-
                 setTimeout(() => {
                     PingLoopCheck()
                 }, config.TrackerCheckTime * 1000)
@@ -200,9 +203,11 @@ function PingTracker(id, callback) {
     setTimeout(() => { // Wait 5s for tracker to respond.
         if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+            debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " did not respond")
         }
         else {
             ToReturn.error = ERROR_CODES.ErrorOK
+            debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " responded")
         }
         callback(ToReturn)
     }, 5000);
@@ -261,8 +266,8 @@ function RequestTrackerPosition(id, callback) {
     }
 }
 
-function AddTracker(id,trackerName,topicRX,topicTX) {
-    GlobalTrackerList[GlobalTrackerList.length] = {
+function AddTracker(id,trackerName,topicRX,topicTX,pass) {
+    GlobalTrackerList.push({
         id: id,
         name: trackerName,
         topicRX: topicRX,
@@ -270,7 +275,11 @@ function AddTracker(id,trackerName,topicRX,topicTX) {
         pos: {},
         status: {},
         timestamp: 0,
-    }
+    })
+    const AddTrackerCredentials = spawn("mosquitto_passwd", ["-b","mqtt-password",trackerName,pass]);
+    const CopyPasswordFile = spawn("cp",["mosquitto_passwd","/etc/mosquitto/mosquitto_passwd"]);
+    const ReloadMQTTConfig = spawn("systemctl", ["reload","mosquitto.service"]);
+
 }
 
 function PingLoopCheck() {
@@ -318,8 +327,8 @@ module.exports = {
      * @param {String} topicRX MQTT Unique topicTX.
      * @param {String} topicTX MQTT Unique topicRX.
      */
-    AddTracker: function(id,trackerName,topicRX,topicTX) {
-        AddTracker(id,trackerName,topicRX,topicTX) 
+    AddTracker: function(id,trackerName,topicRX,topicTX,pass) {
+        AddTracker(id,trackerName,topicRX,topicTX,pass) 
     }
 }
 

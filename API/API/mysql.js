@@ -231,7 +231,7 @@ function AddUserToDb(mail, password, token, callback) {
     });
 }
 
-function AddTrackerToUser(token, trackerName, callback) { // Used to add a new tracker in the following tables : CredentialsTracker, Status_IOT.
+function AddTrackerToUser(token, trackerName, password, callback) { // Used to add a new tracker in the following tables : CredentialsTracker, Status_IOT.
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     var UserId = 0
@@ -253,7 +253,7 @@ function AddTrackerToUser(token, trackerName, callback) { // Used to add a new t
                     }
                     else { // If nothing fail.
                         TrackerId = result[0].ID + 1 // As the result only count the existing entries we add 1.
-                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user, safeZoneDiam, lonSfz, latSfz) VALUES ('" + trackerName + "', '" + "password" + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "','15','0.0','0.0')", function (err, result) {
+                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user, safeZoneDiam, lonSfz, latSfz) VALUES ('" + trackerName + "', '" + password + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "','15','0.0','0.0')", function (err, result) {
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
@@ -520,8 +520,8 @@ module.exports = { // Export funtion for other file to use it.
      * @param {(String)} trackerName - The tracker name.
      * @param {Function} callback - The callback to trigger.
      */
-    AddTrackerToUser: function (token, tracker, callback) {
-        AddTrackerToUser(token, tracker, callback)
+    AddTrackerToUser: function (token, trackerName, password, callback) {
+        AddTrackerToUser(token, trackerName, password, callback)
     },
     /**
      * Fetch all credentials off all the existing trackers from the DB.
