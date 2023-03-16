@@ -18,11 +18,10 @@ const cert = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate
 const rateLimit = require('express-rate-limit')
 const limiter = rateLimit({
 	windowMs: 1000, // 15 minutes
-	max: 10, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	max: 400, // Limit each IP to 400 requests per `window` (here, per second)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
-
 // Apply the rate limiting middleware to all requests
 app.use(limiter)
 app.use(express.json()); // Needed for the json format response.
@@ -43,7 +42,6 @@ const Server = https.createServer({ key, cert }, app).listen(config.Server_Port,
     debug.Print("Server started and ready to respond.")
     discord.SendSucesssWebhook("API","REST API Status","Server started and ready to respond.")
 })
-
 /**
  * The root GET endpoint is used to redirect to the web interface.
  */
