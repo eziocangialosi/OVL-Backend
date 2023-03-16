@@ -385,9 +385,10 @@ function GetTrackerSafezone(id, callback) {
         }
         else {
             if (result[0] != undefined) {
-                ToReturn.lat = result[0].latSfz
-                ToReturn.lon = result[0].lonSfz
-                ToReturn.diameter = result[0].safeZoneDiam
+                ToReturn.safezone = new Object();
+                ToReturn.safezone.lat = result[0].latSfz
+                ToReturn.safezone.lon = result[0].lonSfz
+                ToReturn.safezone.diameter = result[0].safeZoneDiam
             }
 
             else {

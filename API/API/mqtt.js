@@ -40,30 +40,26 @@ client.on('connect', function () {
                 })
             }
             setTimeout(() => {
-                CheckTrackersPingResponse()
+                var OfflineDevices = 0
+                for (let i = 0; i < GlobalTrackerList.length; i++) {
+                    if (GlobalTrackerList[i].timestamp == 0) {
+                        OfflineDevices++
+                    }
+                    else {
+                        //RequestTrackerPosition(GlobalTrackerList[i].id, function(data){})
+                    }
+                }
+                discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
+                debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
                 DEBUG()
+
+                setTimeout(() => {
+                    PingLoopCheck()
+                }, config.TrackerCheckTime * 1000)
             }, 5000);
         }
     })
 })
-/**
- * Display in the console the number of UP trackers with the help of `GlobalTrackerList`, this function is called on the module init but can be recalled at convenience.
- */
-function CheckTrackersPingResponse() {
-    var OfflineDevices = 0
-    for (let i = 0; i < GlobalTrackerList.length; i++) {
-        if (GlobalTrackerList[i].timestamp == 0) {
-            OfflineDevices++
-        }
-        else {
-            RequestTrackerPosition(GlobalTrackerList[i].id, function(data)
-            {})
-        }
-    }
-    debug.Print("Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
-    discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
-}
-
 /**
  * This listener take the `topic` and the `message` of MQTT frames, and trigger the corresponding actions.
  */
@@ -76,7 +72,6 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     else if (message.toString().startsWith("STG-RQ")) {
         mysql.GetTrackerStatus(topic, function (data) {
             var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+","+data.status.safezone
-            //var to_send = "STG=" + 1 + "," + 0 + "," + 0 + ",15"
             client.publish(topic, to_send)
         })
     }
@@ -155,7 +150,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         mysql.SetTrackerSafezone(id,lat,lon,function(data) {
             
         })
-    }
+    }config.TrackerCheckTime * 1000
 })
 
 function RequestTrackerStatus(id, callback) {
@@ -195,6 +190,7 @@ function PingTracker(id, callback) {
     ToReturn.error = ERROR_CODES.ErrorOK
     for (let i = 0; i < GlobalTrackerList.length; i++) {
         if (GlobalTrackerList[i].id == id) {
+            debug.Print("Ping of tracker " + id)
             Tracker = i
             OldTimestamp = GlobalTrackerList[i].timestamp
             client.publish(GlobalTrackerList[i].topicRX, 'PING')
@@ -273,8 +269,21 @@ function AddTracker(id,trackerName,topicRX,topicTX) {
         topicTX: topicTX,
         pos: {},
         status: {},
-        timestamp: date.GetTimestamp(),
+        timestamp: 0,
     }
+}
+
+function PingLoopCheck() {
+    for (let i = 0; i < GlobalTrackerList.length; i++) {
+        LastContactTime = Math.abs(date.GetTimestamp() - parseInt(GlobalTrackerList[i].timestamp))
+        if(LastContactTime > config.TrackerCheckTime) {
+            debug.Print("Requesting tracker availability " + GlobalTrackerList[i].name)
+            PingTracker(GlobalTrackerList[i].id, function(data) {})
+        }
+    }
+    setTimeout(() => { // Wait 5s for tracker to respond.
+        PingLoopCheck()
+    }, config.TrackerCheckTime * 1000);
 }
 
 module.exports = {

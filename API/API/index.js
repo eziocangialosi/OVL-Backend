@@ -15,7 +15,16 @@ const discord = require('./discord')
 const app = express() // Create the REST API
 const key = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Key));
 const cert = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Cert));
+const rateLimit = require('express-rate-limit')
+const limiter = rateLimit({
+	windowMs: 1000, // 15 minutes
+	max: 10, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 
+// Apply the rate limiting middleware to all requests
+app.use(limiter)
 app.use(express.json()); // Needed for the json format response.
 app.use(express.urlencoded({ extended: true })); // Allow urlencode parameters.
 /**
@@ -88,7 +97,7 @@ const GET_Endpoint_HandleGetTrackerPositionHistory = app.get('/position/history/
  */
 const GET_Endpoint_HandleGetSafezone = app.get('/position/safezone/:id/', (req, res) => { // Endpoint used to position history of a tracker from his id. [DONE]
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetTrackerHandleGetSafezone]")
-    res.status(200).json({safezone: {lat: 0.0, lon: 15.0},error: ERROR_CODES.ErrorOK})
+    api_handler.HandleGetTrackerSafezonePosition(req, res)
 })
 /**
  * This POST endpoint add a new user to the database.
