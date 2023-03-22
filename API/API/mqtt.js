@@ -76,6 +76,15 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     }
     else if (message.toString().startsWith("STG-RQ")) {
         mysql.GetTrackerStatus(topic, function (data) {
+            for (let i = 0; i < GlobalTrackerList.length; i++) {
+                if (GlobalTrackerList[i].topicRX == topic) {
+                    GlobalTrackerList[i].timestamp = date.GetTimestamp()
+                    GlobalTrackerList[i].status.veh_chg = data.status.status_vh_charge
+                    GlobalTrackerList[i].status.eco_mode = data.status.status_ecomode
+                    GlobalTrackerList[i].status.protection = data.status.status_protection
+                    break
+                }
+            }
             var to_send = "STG="+data.status.status_vh_charge+","+data.status.status_ecomode+","+data.status.status_protection+","+data.status.safezone
             client.publish(topic, to_send)
         })
