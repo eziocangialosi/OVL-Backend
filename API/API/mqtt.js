@@ -37,6 +37,7 @@ client.on('connect', function () {
                 client.subscribe(data.trackers[i].topicTX, function (err) {
                     if (!err) {
                         client.publish(data.trackers[i].topicRX, 'PING')
+                        debug.Print("[MQTT] Sub to "+data.trackers[i].topicTX+" topic")
                     }
                     else {
                         console.error("[TEST SERVER CONNECTION] Error in MQTT connection for topic [" + data.trackers[i].topicTX + "] !")
@@ -48,9 +49,10 @@ client.on('connect', function () {
                 for (let i = 0; i < GlobalTrackerList.length; i++) {
                     if (GlobalTrackerList[i].timestamp == 0) {
                         OfflineDevices++
+                        mysql.SetTrackerAvailability(GlobalTrackerList[i].id,0)
                     }
                     else {
-                        //RequestTrackerPosition(GlobalTrackerList[i].id, function(data){})
+                        mysql.SetTrackerAvailability(GlobalTrackerList[i].id,1)
                     }
                 }
                 discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
@@ -203,10 +205,13 @@ function PingTracker(id, callback) {
     setTimeout(() => { // Wait 5s for tracker to respond.
         if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+            mysql.SetTrackerAvailability(GlobalTrackerList[Tracker].id,0)
+             
             debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " did not respond")
         }
         else {
             ToReturn.error = ERROR_CODES.ErrorOK
+            mysql.SetTrackerAvailability(GlobalTrackerList[Tracker].id,1)
             debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " responded")
         }
         callback(ToReturn)

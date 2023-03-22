@@ -442,6 +442,16 @@ function AddUserLogin(user) {
     });
 }
 
+function SetTrackerAvailability(Tracker_ID,State) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("UPDATE Status_IOT SET status_online = '"+State+"' WHERE id_iot = '"+Tracker_ID+"'", (err, result) => {
+        if (err) {
+            console.error(err)
+        }
+    });
+}
+
 module.exports = { // Export funtion for other file to use it.
     /**
      * Fetch the user information from the user auth token (id).
@@ -587,5 +597,13 @@ module.exports = { // Export funtion for other file to use it.
      */
     AddUserLogin: function (user) {
         AddUserLogin(user)
-    }
+    },
+    /**
+     * Set the tracker availabilty.
+     * @param {(Int)} Tracker_ID - The unique ID of the tracker.
+     * @param {(Bool)} State - Connexion state f the tracker
+     */
+    SetTrackerAvailability: function(Tracker_ID,State) {
+        SetTrackerAvailability(Tracker_ID,State)
+    }  
 }
