@@ -347,7 +347,7 @@ function AddPositionOfTrackerToDb(pos, id, date, alarm, callback) {
         }
         else {
             if(alarm == 0) {
-                sql = "SELECT * FROM Pos_IOT WHERE id_iot = '" + id + "' ORDER BY id DESC LIMIT "+config.QuantityOfPosPerTracker; // This SQL request keep only the last n records in the database
+                sql = "SELECT * FROM Pos_IOT WHERE id_iot = '" + id + "' ORDER BY id DESC LIMIT " + config.QuantityOfPosPerTracker; // This SQL request keep only the last n records in the database
                 con.query(sql, function (err, result) {
                     if (err) {
                         ToReturn.error = ERROR_CODES.ErrorSQLInjectError

@@ -1,0 +1,19 @@
+[Unit]
+Description=OVl Node.JS REST API
+After=network-online.target
+
+[Service]
+Type=simple
+
+User=root
+Group=root
+
+ExecStart=sh /API/launch
+
+Restart=on-failure
+
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=1
+
+[Install]
+WantedBy=multi-user.target

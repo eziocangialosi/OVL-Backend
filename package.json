@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "clean-jsdoc-theme": "^4.2.6",
-    "express-rate-limit": "^6.7.0"
-  }
-}
