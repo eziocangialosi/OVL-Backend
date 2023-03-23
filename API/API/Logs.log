@@ -322,3 +322,57 @@
 [23-03-2023] [21:33:28] -> Tracker Tracker #1 (ovl) did not respond
 [23-03-2023] [21:33:28] -> Tracker Tracker #2 (ovl) did not respond
 [23-03-2023] [21:33:28] -> Tracker Tracker #3 (ovl) did not respond
+[23-03-2023] [21:36:08] -> Requesting tracker availability Tracker #1 (test)
+[23-03-2023] [21:36:08] -> Ping of tracker 1
+[23-03-2023] [21:36:08] -> Requesting tracker availability Tracker #2 (test)
+[23-03-2023] [21:36:08] -> Ping of tracker 2
+[23-03-2023] [21:36:08] -> Requesting tracker availability freewind
+[23-03-2023] [21:36:08] -> Ping of tracker 3
+[23-03-2023] [21:36:08] -> Requesting tracker availability Tracker #1 (ovl)
+[23-03-2023] [21:36:08] -> Ping of tracker 4
+[23-03-2023] [21:36:08] -> Requesting tracker availability Tracker #2 (ovl)
+[23-03-2023] [21:36:08] -> Ping of tracker 5
+[23-03-2023] [21:36:08] -> Requesting tracker availability Tracker #3 (ovl)
+[23-03-2023] [21:36:08] -> Ping of tracker 6
+[23-03-2023] [21:36:13] -> Tracker Tracker #1 (test) did not respond
+[23-03-2023] [21:36:13] -> Tracker Tracker #2 (test) did not respond
+[23-03-2023] [21:36:13] -> Tracker freewind did not respond
+[23-03-2023] [21:36:13] -> Tracker Tracker #1 (ovl) did not respond
+[23-03-2023] [21:36:13] -> Tracker Tracker #2 (ovl) did not respond
+[23-03-2023] [21:36:13] -> Tracker Tracker #3 (ovl) did not respond
+[23-03-2023] [21:38:22] -> Requesting tracker availability Tracker #1 (test)
+[23-03-2023] [21:38:22] -> Ping of tracker 1
+[23-03-2023] [21:38:22] -> Requesting tracker availability Tracker #2 (test)
+[23-03-2023] [21:38:22] -> Ping of tracker 2
+[23-03-2023] [21:38:22] -> Requesting tracker availability freewind
+[23-03-2023] [21:38:22] -> Ping of tracker 3
+[23-03-2023] [21:38:22] -> Requesting tracker availability Tracker #1 (ovl)
+[23-03-2023] [21:38:22] -> Ping of tracker 4
+[23-03-2023] [21:38:22] -> Requesting tracker availability Tracker #2 (ovl)
+[23-03-2023] [21:38:22] -> Ping of tracker 5
+[23-03-2023] [21:38:22] -> Requesting tracker availability Tracker #3 (ovl)
+[23-03-2023] [21:38:22] -> Ping of tracker 6
+[23-03-2023] [21:38:27] -> Tracker Tracker #1 (test) did not respond
+[23-03-2023] [21:38:27] -> Tracker Tracker #2 (test) did not respond
+[23-03-2023] [21:38:27] -> Tracker freewind did not respond
+[23-03-2023] [21:38:27] -> Tracker Tracker #1 (ovl) did not respond
+[23-03-2023] [21:38:27] -> Tracker Tracker #2 (ovl) did not respond
+[23-03-2023] [21:38:27] -> Tracker Tracker #3 (ovl) did not respond
+[23-03-2023] [21:41:07] -> Requesting tracker availability Tracker #1 (test)
+[23-03-2023] [21:41:07] -> Ping of tracker 1
+[23-03-2023] [21:41:07] -> Requesting tracker availability Tracker #2 (test)
+[23-03-2023] [21:41:07] -> Ping of tracker 2
+[23-03-2023] [21:41:07] -> Requesting tracker availability freewind
+[23-03-2023] [21:41:07] -> Ping of tracker 3
+[23-03-2023] [21:41:07] -> Requesting tracker availability Tracker #1 (ovl)
+[23-03-2023] [21:41:07] -> Ping of tracker 4
+[23-03-2023] [21:41:07] -> Requesting tracker availability Tracker #2 (ovl)
+[23-03-2023] [21:41:07] -> Ping of tracker 5
+[23-03-2023] [21:41:07] -> Requesting tracker availability Tracker #3 (ovl)
+[23-03-2023] [21:41:07] -> Ping of tracker 6
+[23-03-2023] [21:41:12] -> Tracker Tracker #1 (test) did not respond
+[23-03-2023] [21:41:12] -> Tracker Tracker #2 (test) did not respond
+[23-03-2023] [21:41:12] -> Tracker freewind did not respond
+[23-03-2023] [21:41:12] -> Tracker Tracker #1 (ovl) did not respond
+[23-03-2023] [21:41:12] -> Tracker Tracker #2 (ovl) did not respond
+[23-03-2023] [21:41:12] -> Tracker Tracker #3 (ovl) did not respond
