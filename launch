@@ -1,0 +1,5 @@
+cd /API/API/API
+while :
+do
+	node index.js
+done

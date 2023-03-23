@@ -1,0 +1,56 @@
+{
+    "source": {
+        "include": ["../API/API"],
+        "includePattern": ".js(doc|x)?$",
+        "excludePattern": "(node_modules/|docs)"
+    },
+    "plugins": ["plugins/markdown"],
+    "opts": {
+        "encoding": "utf8",
+        "readme": "../README.md",
+        "destination": "/var/www/html/website/docs/backend/",
+        "recurse": true,
+        "verbose": true,
+        "template": "../node_modules/clean-jsdoc-theme",
+        "theme_opts": {
+            "meta": [
+                {
+                  "name": "author",
+                  "content": "Tech-User"
+                },
+                {
+                  "name": "description",
+                  "content": "Rest API for the open-source project Open Vehicle Locator"
+                }
+              ],
+              "menu": [
+                {
+                  "title": "Git-Hub Repository",
+                  "link": "https://github.com/eziocangialosi/OVL-Backend",
+                  "target": "_blank",
+                  "class": "some-class",
+                  "id": "some-id"
+                },
+                {
+                  "title": "API Endpoints",
+                  "link": "https://github.com/eziocangialosi/OVL-Documentation/blob/master/backend/API%20Rest/endpoints.md",
+                  "target": "_blank",
+                  "class": "some-class",
+                  "id": "some-id"
+                }
+            ],
+            "base_url": "https://ovl.tech-user.fr:7070/docs/backend/",
+            "homepageTitle": "Backend documentation for the REST API",
+            "title":"Home",
+            "includeFilesListInHomepage": true,
+            "include_css": ["./css/style.css"],
+            "include_js": ["./scripts/script.js"],
+            "footer": "<div class=\"footer-wrapper\">Made by <a href=\"https://github.com/Tech-User42\">Tech-User 42</a> with ❤️ for the open-source project <a href=\"https://github.com/eziocangialosi/OVL-Backend\">Open Vehicle Locator</a></div>" 
+          }
+    },
+    
+    "markdown": {
+        "hardwrap": false,
+        "idInHeadings": true
+    }
+}
