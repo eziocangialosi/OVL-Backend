@@ -10,7 +10,8 @@ const { ERROR_CODES } = require('./error_codes');
 const config = require('./config')
 var con = mysql.createConnection(config.Database_Config);
 const date = require('./date')
-const discord = require('./discord')
+const discord = require('./discord');
+const mqtt = require('./mqtt');
 function handleDisconnect() { // This thing reconnect the database.
     con = mysql.createConnection(config.Database_Config);
     con.connect(function onConnect(err) {   // The server is either down
@@ -181,8 +182,12 @@ function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protectio
             console.error(err)
             ToReturn.error = err
         }
+        else {
+            mqtt.UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge)
+        }
         callback(ToReturn);
     });
+
 }
 
 function GetUserInformation(token, callback) {

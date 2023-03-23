@@ -308,6 +308,20 @@ function PingLoopCheck() {
     }, config.TrackerCheckTime * 1000);
 }
 
+function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge) {
+    for (let i = 0; i < GlobalTrackerList.length; i++) {
+        if (GlobalTrackerList[i].id == id_iot) {
+            GlobalTrackerList[i].timestamp = date.GetTimestamp()
+            GlobalTrackerList[i].status.veh_chg = status_vh_charge
+            GlobalTrackerList[i].status.eco_mode = status_ecomode
+            GlobalTrackerList[i].status.protection = status_protection
+            GlobalTrackerList[i].status.alarm = status_alarm
+            break
+        }
+    }
+}
+
+
 module.exports = {
     /**
      * Send a MQTT position request to the tracker based on his unique ID.
@@ -343,6 +357,17 @@ module.exports = {
      */
     AddTracker: function(id,trackerName,topicRX,topicTX,password) {
         AddTracker(id,trackerName,topicRX,topicTX,password) 
+    },
+    /**
+     * Update status of a tracker based on his id.
+     * @param {Int} id_iot Tracker unique ID.
+     * @param {Bool} status_alarm Tracker alarm state.
+     * @param {Bool} status_ecomode Tracker ecomode state.
+     * @param {Bool} status_protection Tracker protection state.
+     * @param {Bool} status_vh_charge Tracker allowed or not to charge.
+     */
+    UpdateTrackerStatus: function(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge) {
+        UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge)
     }
 }
 
