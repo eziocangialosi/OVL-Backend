@@ -34,6 +34,7 @@ function handleDisconnect() { // This thing reconnect the database.
         }
     });
 }
+
 handleDisconnect(); // This handle any disconnect from the SQL server.
 
 function CheckUserCredentials(mail, callback) {
@@ -130,7 +131,6 @@ function GetTrackerStatus(topic, callback) {
                 });
             }
         }
-        
     });
 }
 
@@ -187,7 +187,6 @@ function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protectio
         }
         callback(ToReturn);
     });
-
 }
 
 function GetUserInformation(token, callback) {
@@ -289,7 +288,6 @@ function AddTrackerToUser(token, trackerName, password, callback) { // Used to a
                 callback(ToReturn)
             }
         }
-        
     });
 }
 
@@ -395,7 +393,6 @@ function GetTrackerSafezone(id, callback) {
                 ToReturn.safezone.lon = result[0].lonSfz
                 ToReturn.safezone.diameter = result[0].safeZoneDiam
             }
-
             else {
                 ToReturn.error = ERROR_CODES.ErrorUserHasNoTracker
             }
@@ -418,7 +415,6 @@ function SetTrackerSafezone(id,lat,lon, callback) {
                 ToReturn.lon = result[0].lonSfz
                 ToReturn.diameter = result[0].safeZoneDiam
             }
-
             else {
                 ToReturn.error = ERROR_CODES.ErrorUserHasNoTracker
             }

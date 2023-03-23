@@ -13,7 +13,6 @@ const ReloadMQTTConfig = spawn("systemctl", ["reload","mosquitto.service"]);
 const client = mqtt.connect(config.MQTT.Server,{"username": config.MQTT.Username, "password": config.MQTT.Password})
 const debug = require('./debug')
 const discord = require('./discord')
-
 /**
  * Array of all `TrackerDetails` Objects.
  */
@@ -132,8 +131,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].pos = TrackerPosition
-                mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  GlobalTrackerList[i].timestamp,GlobalTrackerList[i].status.alarm, function(data) {
-                })
+                mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  GlobalTrackerList[i].timestamp,GlobalTrackerList[i].status.alarm, function(data) {})
                 break
             }
         }
@@ -161,10 +159,8 @@ const MQTT_Listener = client.on('message', function (topic, message) {
                 break
             }
         }
-        mysql.SetTrackerSafezone(id,lat,lon,function(data) {
-            
-        })
-    }config.TrackerCheckTime * 1000
+        mysql.SetTrackerSafezone(id,lat,lon,function(data) {})
+    }
 })
 
 function RequestTrackerStatus(id, callback) {
@@ -215,7 +211,6 @@ function PingTracker(id, callback) {
         if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
             mysql.SetTrackerAvailability(GlobalTrackerList[Tracker].id,0)
-             
             debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " did not respond")
         }
         else {
@@ -320,7 +315,6 @@ function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protec
         }
     }
 }
-
 
 module.exports = {
     /**
