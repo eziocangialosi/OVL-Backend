@@ -109,6 +109,10 @@ function HandleGetStatusList(req, res) { // Return all status from all trackers 
 function HandleSetStatus(req, res) { // Set a tracker status [TODO]
     logs.LogRequest("Set tracker status request for tracker with id  "+req.body.id_iot)
     mysql.SetTrackerStatus(req.body.id_iot, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
+        if(data.error.code == 0)
+        {
+            mqtt.UpdateTrackerStatus(req.body.id_iot, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge)
+        }
         res.status(200).json({ error: data.error }) // Reply with the json object.
     })
 }
