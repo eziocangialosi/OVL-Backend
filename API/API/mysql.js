@@ -315,7 +315,7 @@ function UpdateTrackerStatus(status, topic, callback) {
 function GetAllTrackersTopics(callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
-    con.query("SELECT * FROM CredentialsTracker", (err, result) => {
+    con.query("SELECT * FROM CredentialsTracker t1 INNER JOIN Status_IOT t2 ON t1.id = t2.id_iot", (err, result) => {
         if (err) {
             console.error(err)
             ToReturn.error = err
@@ -362,8 +362,12 @@ function AddPositionOfTrackerToDb(pos, id, date, alarm, callback) {
                         sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + IDToRemove + ") AND id_iot = '" + id + "'";
                         con.query(sql, function (err, result) {
                             if (err) {
+                                debug.Print("Keeping records with following ids : " + IDToRemove)
                                 ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
                                 throw err
+                            }
+                            else {
+                                debug.Print("Failed to keep only " + config.QuantityOfPosPerTracker)
                             }
                         });
                     }

@@ -30,7 +30,15 @@ client.on('connect', function () {
                     topicRX: data.trackers[i].topicRX,
                     topicTX: data.trackers[i].topicTX,
                     pos: {},
-                    status: {},
+                    status: {
+                        bat : data.trackers[i].status_bat,
+                        charge : data.trackers[i].status_charge,
+                        veh_chg : data.trackers[i].status_vh_charge,
+                        eco_mode : data.trackers[i].status_ecomode,
+                        protection : data.trackers[i].status_protection,
+                        alarm : data.trackers[i].status_alarm,
+                        gps : data.trackers[i].status_gps
+                    },
                     timestamp: 0,
                 }
                 client.subscribe(data.trackers[i].topicTX, function (err) {
@@ -51,7 +59,10 @@ client.on('connect', function () {
                         mysql.SetTrackerAvailability(GlobalTrackerList[i].id,0)
                     }
                     else {
-                        mysql.SetTrackerAvailability(GlobalTrackerList[i].id,1)
+                        RequestTrackerStatus(GlobalTrackerList[i].id, function(data) 
+                        {
+                            mysql.SetTrackerAvailability(GlobalTrackerList[i].id,1)
+                        })
                     }
                 }
                 discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
@@ -132,7 +143,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].pos = TrackerPosition
                 mysql.AddPositionOfTrackerToDb(GlobalTrackerList[i].pos, GlobalTrackerList[i].id,  GlobalTrackerList[i].timestamp,GlobalTrackerList[i].status.alarm, function(data) {})
-                break
+                //break
             }
         }
         client.publish(topic, 'POS-ACK') // Respond to the message.
