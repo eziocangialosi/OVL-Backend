@@ -25,7 +25,7 @@ client.on('connect', function () {
         if (data.error == ERROR_CODES.ErrorOK) {
             for (let i = 0; i < data.trackers.length; i++) {
                 GlobalTrackerList[i] = {
-                    id: data.trackers[i].id,
+                    id: data.trackers[i].id_iot,
                     name: data.trackers[i].trackerName,
                     topicRX: data.trackers[i].topicRX,
                     topicTX: data.trackers[i].topicTX,
