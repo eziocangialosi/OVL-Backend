@@ -84,7 +84,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish(topic, 'SYN-ACK') // Respond to the message.
     }
-    else if (message.toString().startsWith("STG-RQ")) {
+    else if (message.toString().startsWith("STG-RQ")) { // Settings request.
         mysql.GetTrackerStatus(topic, function (data) {
             for (let i = 0; i < GlobalTrackerList.length; i++) {
                 if (GlobalTrackerList[i].topicRX == topic) {
@@ -125,7 +125,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
     else if (message.toString().startsWith("PING")) { // Ping request from Tracker.
         client.publish(topic, 'PONG') // Respond to the message.
     }
-    else if (message.toString().startsWith("PONG")) { // Ping request from Tracker.
+    else if (message.toString().startsWith("PONG")) { // Pong response from Tracker.
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
@@ -133,7 +133,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             }
         }
     }
-    else if (message.toString().startsWith("POS=")) { // Position of the tracker.
+    else if (message.toString().startsWith("POS=")) { // Position of the tracker. mosquitto_pub -h ovl.tech-user.fr -u "freewind" -P "password" -p 6868 -t topicTX_3 -m "POS=0.0,10.0"
         TrackerPosition = {
             lat: message.toString().split('=')[1].split(',')[0],
             lon: message.toString().split(',')[1],
@@ -293,7 +293,15 @@ function AddTracker(id,trackerName,topicRX,topicTX,pass) {
         topicRX: topicRX,
         topicTX: topicTX,
         pos: {},
-        status: {},
+        status: {
+            bat : 0,
+            charge : 0,
+            veh_chg : 0,
+            eco_mode : 0,
+            protection : 0,
+            alarm : 0,
+            gps : 0
+        },
         timestamp: 0,
     })
     const AddTrackerCredentials = spawn("mosquitto_passwd", ["-b","mqtt-password",trackerName,pass]);
