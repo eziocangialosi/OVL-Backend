@@ -59,10 +59,7 @@ client.on('connect', function () {
                         mysql.SetTrackerAvailability(GlobalTrackerList[i].id,0)
                     }
                     else {
-                        RequestTrackerStatus(GlobalTrackerList[i].id, function(data) 
-                        {
-                            mysql.SetTrackerAvailability(GlobalTrackerList[i].id,1)
-                        })
+                        RequestTrackerStatus(GlobalTrackerList[i].id, function(data) {})
                     }
                 }
                 discord.SendInfoWebhook("API","Initial Trackers ping check","Check for ping finished " + OfflineDevices + " offline devices on " + GlobalTrackerList.length + " devices.")
@@ -195,9 +192,11 @@ function RequestTrackerStatus(id, callback) {
         setTimeout(() => { // Wait 5s for tracker to respond.
             if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
                 ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+                mysql.SetTrackerAvailability(id,0)
             }
             else {
                 ToReturn.status = GlobalTrackerList[Tracker].status
+                mysql.SetTrackerAvailability(id,1)
             }
             callback(ToReturn)
         }, 5000);

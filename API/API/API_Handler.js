@@ -60,7 +60,7 @@ function HandleUserInfoRequest(req, res) { // Return User info if mail and passw
 }
 
 function HandleStatusRequest(req, res) { //
-    logs.LogRequest("Status request for tarcker with id "+req.params.id_iot)
+    logs.LogRequest("Status request for tracker with id "+req.params.id_iot)
     mqtt.RequestTrackerStatus(req.params.id_iot, function (data) {
         res.status(200).json(data) // Reply with the json object.
     })
