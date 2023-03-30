@@ -1,3 +1,7 @@
+<a href="https://github.com/eziocangialosi/OpenVehicleLocator">
+    <img src="https://raw.githubusercontent.com/eziocangialosi/OVL-Documentation/master/images/OVL_logo_name_white.png" alt="OVL logo" title="OVL" align="right" height="60" />
+</a>
+
 # OVL-Backend
 
 This repository contains all the backend code for the OVL project including :
@@ -16,5 +20,5 @@ This repository contains all the backend code for the OVL project including :
 - [ ] Rework API error codes
 - [ ] Prevent sending MQTT frame while receiving data
 - [ ] Complete API Documentation
-- [ ] Make MQTT frame handlers
-- [ ] Make MQTT frame sender
+- [x] Make MQTT frame handlers
+- [x] Make MQTT frame sender
