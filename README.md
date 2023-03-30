@@ -20,5 +20,5 @@ This repository contains all the backend code for the OVL project including :
 - [ ] Rework API error codes
 - [ ] Prevent sending MQTT frame while receiving data
 - [ ] Complete API Documentation
-- [x] Make MQTT frame handlers
-- [x] Make MQTT frame sender
+- [X] Make MQTT frame handlers
+- [X] Make MQTT frame sender
