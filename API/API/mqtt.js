@@ -322,6 +322,7 @@ function PingLoopCheck() {
 }
 
 function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge) {
+    IsOk = false
     for (let i = 0; i < GlobalTrackerList.length; i++) {
         if (GlobalTrackerList[i].id == id_iot) {
             GlobalTrackerList[i].timestamp = date.GetTimestamp()
@@ -329,8 +330,17 @@ function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protec
             GlobalTrackerList[i].status.eco_mode = status_ecomode
             GlobalTrackerList[i].status.protection = status_protection
             GlobalTrackerList[i].status.alarm = status_alarm
+            var to_send = "STG="+status_vh_charge+","+status_ecomode+","+status_protection+","+GlobalTrackerList[i].status.safezone
+            client.publish(GlobalTrackerList[i].topicRX, to_send)
+            IsOk = true
             break
         }
+    }
+    if(IsOk) {
+        logs.LogRequest("Tracker status updated in MQTT for tracker "+id_iot)
+    }
+    else {
+        logs.LogRequest("Tracker status failed to update in MQTT for tracker "+id_iot)
     }
 }
 
