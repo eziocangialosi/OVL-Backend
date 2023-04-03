@@ -5,6 +5,9 @@ sudo apt full-upgrade -y
 clear
 echo "Installing depedencies 1/2..."
 sudo apt install -y nodejs npm mariadb-server
+mysql -e "UPDATE mysql.user SET Password=PASSWORD('ABigAndKomplexP@ssWord') WHERE User='root'; quit;"
+mysql -e "CREATE DATABASE OVL; quit;"
+mysql OVL < OVL_DB_Sheme.sql
 clear
 cd ..
 cd ./API/API/
