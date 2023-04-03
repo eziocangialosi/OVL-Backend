@@ -337,10 +337,10 @@ function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protec
         }
     }
     if(IsOk) {
-        logs.LogRequest("Tracker status updated in MQTT for tracker "+id_iot)
+        debug.Print("Tracker status updated in MQTT for tracker "+id_iot)
     }
     else {
-        logs.LogRequest("Tracker status failed to update in MQTT for tracker "+id_iot)
+        debug.Print("Tracker status failed to update in MQTT for tracker "+id_iot)
     }
 }
 
