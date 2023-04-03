@@ -362,12 +362,12 @@ function AddPositionOfTrackerToDb(pos, id, date, alarm, callback) {
                         sql = "DELETE FROM Pos_IOT WHERE id NOT IN (" + IDToRemove + ") AND id_iot = '" + id + "'";
                         con.query(sql, function (err, result) {
                             if (err) {
-                                debug.Print("Keeping records with following ids : " + IDToRemove)
+                                debug.Print("Failed to keep only " + config.QuantityOfPosPerTracker)
                                 ToReturn.error = ERROR_CODES.ErrorSQLDeleteError
                                 throw err
                             }
                             else {
-                                debug.Print("Failed to keep only " + config.QuantityOfPosPerTracker)
+                                debug.Print("Keeping records with following ids : " + IDToRemove)
                             }
                         });
                     }
