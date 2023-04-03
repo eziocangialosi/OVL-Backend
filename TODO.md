@@ -4,5 +4,6 @@
 - [X] Make MQTT Handler
 - [X] Make MYSQL Handler
 - [X] Make API Documentation
+- [ ] Make full standalone script (need internet anyway).
 - [ ] Rework API error codes
 - [ ] Complete API Documentation
