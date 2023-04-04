@@ -1,9 +1,6 @@
-
-
 <a href="https://github.com/eziocangialosi/OpenVehicleLocator">
     <img src="https://raw.githubusercontent.com/eziocangialosi/OVL-Documentation/master/images/OVL_logo_name_white.png" alt="OVL logo" title="OVL" align="right" height="60" />
 </a>
-
 
 # Installation instructions of Backend Services
 
@@ -11,7 +8,8 @@
 
 1. 🖥️ | Have a linux environnement with APT package manager, Ubuntu Server is a good choice for beginners 😉.
 2. 🦸 | Have SuperUser (root / sudo) rights on the machine.
-3. 📖 | Know how to run commands in a shell (cd chmod etc...) .
+3. 📖 | Know how to run commands in a shell (cd chmod etc...).
+4. 📶 | Have a valid domain name to bind to the API.
 
 ## How to install ?
 
