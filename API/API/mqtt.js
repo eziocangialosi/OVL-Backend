@@ -13,6 +13,7 @@ const ReloadMQTTConfig = spawn("systemctl", ["reload","mosquitto.service"]);
 const client = mqtt.connect(config.MQTT.Server,{"username": config.MQTT.Username, "password": config.MQTT.Password})
 const debug = require('./debug')
 const discord = require('./discord')
+const notifications = require('./notifications')
 /**
  * Array of all `TrackerDetails` Objects.
  */
@@ -151,6 +152,9 @@ const MQTT_Listener = client.on('message', function (topic, message) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].status.alarm = 1
                 discord.SendWarningWebhook("Tracker Monitor","Unauthorized move","Unauthorized move of the vehicle with the tracker \"**"+GlobalTrackerList[i].name+"**\""+"\n**You can check the position __[here]("+config.AdministrationURL+"iot/historique.php?iot="+GlobalTrackerList[i].id+")__**")
+                mysql.GetUserInformationFromTopic(GlobalTrackerList[i].topicRX , function(data) {
+                    notifications.SendMoveNotification(data.NotificationToken,GlobalTrackerList[i].name)
+                })
                 debug.Print("Received Alarm from the tracker ["+GlobalTrackerList[i].name+"]")
                 break
             }
@@ -383,13 +387,12 @@ module.exports = {
     /**
      * Update status of a tracker based on his id.
      * @param {Int} id_iot Tracker unique ID.
-     * @param {Bool} status_alarm Tracker alarm state.
      * @param {Bool} status_ecomode Tracker ecomode state.
      * @param {Bool} status_protection Tracker protection state.
      * @param {Bool} status_vh_charge Tracker allowed or not to charge.
      */
-    UpdateTrackerStatus: function(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge) {
-        UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge)
+    UpdateTrackerStatus: function(id_iot, status_ecomode, status_protection, status_vh_charge) {
+        UpdateTrackerStatus(id_iot, status_ecomode, status_protection, status_vh_charge)
     }
 }
 

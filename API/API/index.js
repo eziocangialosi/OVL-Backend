@@ -4,18 +4,19 @@
 */
 const fs = require('fs');
 const path = require('path');
-const config = require('./config') // Load config file.
+const config = require('./config'); // Load config file.
 const https = require('https'); // Required to use HTTPS for the REST API
 const express = require('express'); // Required for the REST API to work.
 const cors = require('cors') // Needed to sertup REST API for mobile use.
 const debug = require('./debug') // Debug function.
 const api_handler = require('./API_Handler');
 const { ERROR_CODES } = require('./error_codes');
-const discord = require('./discord')
+const discord = require('./discord');
 const app = express() // Create the REST API
 const key = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Key));
 const cert = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Cert));
-const rateLimit = require('express-rate-limit')
+const rateLimit = require('express-rate-limit');
+const notification = require('./notifications');
 const limiter = rateLimit({
 	windowMs: 1000, // 15 minutes
 	max: 400, // Limit each IP to 400 requests per `window` (here, per second)
@@ -114,7 +115,7 @@ const POST_Endpoint_HandleTrackerAddRequest = app.post('/iot/', (req, res) => { 
 /**
  * This PUT endpoint set the status of the tarcker in the DB.
  */
-const PUT_Endpoint_HandleSetStatus = app.put('/set/status/', (req, res) => { // Endpoint used to set tracker status. [TOFINISH]
+const PUT_Endpoint_HandleSetStatus = app.put('/set/status/', (req, res) => { // Endpoint used to set tracker status. [DONE]
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"PUT Request [HandleSetStatus]")
     api_handler.HandleSetStatus(req, res)
 })

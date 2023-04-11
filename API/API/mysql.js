@@ -173,10 +173,10 @@ function GetTrackerLastPosition(id_iot, callback) {
     });
 }
 
-function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
+function SetTrackerStatus(id_iot, status_ecomode, status_protection, status_vh_charge, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
-    con.query("UPDATE Status_IOT SET status_alarm = '" + status_alarm + "',status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
+    con.query("UPDATE Status_IOT SET status_ecomode = '" + status_ecomode + "',status_protection = '" + status_protection + "',status_vh_charge = '" + status_vh_charge + "' WHERE id_iot='" + id_iot + "'", (err, result) => {
         if (err) {
             console.error(err)
             ToReturn.error = err
@@ -185,10 +185,30 @@ function SetTrackerStatus(id_iot, status_alarm, status_ecomode, status_protectio
     });
 }
 
-function GetUserInformation(token, callback) {
+function GetUserInformationFromToken(token, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
-    con.query("SELECT id FROM users WHERE token='" + token + "'", (err, result) => {
+    con.query("SELECT * FROM users WHERE token='" + token + "'", (err, result) => {
+        if (err) {
+            console.error(err)
+            ToReturn.error = err
+        }
+        else {
+            if (result[0] == undefined) {
+                ToReturn.error = ERROR_CODES.ErrorUserTokenIsInvalid
+            }
+            else {
+                ToReturn.id = result[0].id
+            }
+        }
+        callback(ToReturn);
+    });
+}
+
+function GetUserInformationFromTopic(topic, callback) {
+    ToReturn = new Object();
+    ToReturn.error = ERROR_CODES.ErrorOK
+    con.query("SELECT * FROM users t1 INNER JOIN CredentialsTracker t2 ON t1.id = t2.id_user WHERE t2.topicRX = '" + topic + "'", (err, result) => {
         if (err) {
             console.error(err)
             ToReturn.error = err
@@ -459,8 +479,16 @@ module.exports = { // Export funtion for other file to use it.
      * @param {(String)} token - The auth token of the user.
      * @param {Function} callback - The callback to trigger.
      */
-    GetUserInformation: function (token, callback) {
-        GetUserInformation(token, callback)
+    GetUserInformationFromToken: function (token, callback) {
+        GetUserInformationFromToken(token, callback)
+    },
+    /**
+     * Fetch the user information from RX topic of the tracker.
+     * @param {(String)} topic - The RX Topic of the tracker.
+     * @param {Function} callback - The callback to trigger.
+     */
+    GetUserInformationFromTopic: function(topic, callback) {
+        GetUserInformationFromTopic(topic, callback)
     },
     /**
      * Add a new user to the DB with provided informations.
@@ -513,8 +541,8 @@ module.exports = { // Export funtion for other file to use it.
      * @param {(Bool)} status_vh_charge - If the device is allowed to charge is ON/OFF.
      * @param {Function} callback - The callback to trigger.
      */
-    SetTrackerStatus: function (id_iot, status_charge, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
-        SetTrackerStatus(id_iot, status_charge, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback)
+    SetTrackerStatus: function (id_iot, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback) {
+        SetTrackerStatus(id_iot, status_bat, status_alarm, status_ecomode, status_protection, status_vh_charge, callback)
     },
     /**
      * Update the tracker status in the DB.
