@@ -21,7 +21,7 @@ function HandleGetTrackerPositionActual(req, res) { // [DONE]
 
 function HandleGetUserTrackers(req, res) { // Return tracker list of a user from his token [DONE]
     logs.LogRequest("Request for tracker list of the user with auth token "+req.params.token)
-    mysql.GetUserInformation(req.params.token, function (User) {
+    mysql.GetUserInformationFromToken(req.params.token, function (User) {
         if (User.error.Code == 0) {
             mysql.GetUserTrackers(User.id, function (UserTrackers) {
                 if (UserTrackers.error.Code == 0) {
@@ -107,11 +107,11 @@ function HandleGetStatusList(req, res) { // Return all status from all trackers 
 }
 
 function HandleSetStatus(req, res) { // Set a tracker status [TODO]
-    mysql.SetTrackerStatus(req.body.id_iot, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
+    mysql.SetTrackerStatus(req.body.id_iot, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
         if(data.error.Code == 0) {
             //logs.LogRequest("Tracker status updated in DB for tracker "+req.body.id_iot)
             debug.Print("Updated status in DB for id " + req.body.id_iot)
-            mqtt.UpdateTrackerStatus(req.body.id_iot, req.body.status_alarm, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge)
+            mqtt.UpdateTrackerStatus(req.body.id_iot, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge)
         }
         else {
             debug.Print("Failed to update status in DB for id " + req.body.id_iot)
