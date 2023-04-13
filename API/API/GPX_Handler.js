@@ -29,8 +29,6 @@ function exportToGPX(Tracker,Positions,Callback) {
       </trkseg>
     </trk>
   </gpx>`;
-
-  console.log(gpx);
   Callback(gpx);
 }
 
