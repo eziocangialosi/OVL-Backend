@@ -22,28 +22,37 @@ module.exports = {
      */
     GetTime: function () {
         let date_ob = new Date();
-        let hours = ( "0" + date_ob.getHours()).slice(-2);
-        let minutes = ( "0" + date_ob.getMinutes()).slice(-2);
-        let seconds = ( "0" + date_ob.getSeconds()).slice(-2);
+        let hours = ("0" + date_ob.getHours()).slice(-2);
+        let minutes = ("0" + date_ob.getMinutes()).slice(-2);
+        let seconds = ("0" + date_ob.getSeconds()).slice(-2);
         return (hours + ":" + minutes + ":" + seconds)
     },
     /**
      * Get current timestamp
      * @returns {int} Current timestamp converted in s.
      */
-    GetTimestamp: function() {
-        return  Math.round(Date.now() / 1000);
+    GetTimestamp: function () {
+        return Math.round(Date.now() / 1000);
+    },
+    /**
+     * Get date to iso format from timestamp in second.
+     * @param {int} timestampInSeconds Timestamp in s.
+     * @returns {String} Date in ISO format.
+     */
+    GetISOStringFromTimeStamp: function (timestampInSeconds) {
+        const date = new Date(timestampInSeconds * 1000);
+        return date.toISOString();
     },
     /**
      * Wait for specified amount of time 
      * @deprecated Use setTimeout instead.
      * @param {int} milliseconds Time to wait in milliseconds
      */
-    Wait: function(milliseconds) {
+    Wait: function (milliseconds) {
         const date = Date.now();
         let currentDate = null;
         do {
-          currentDate = Date.now();
+            currentDate = Date.now();
         } while (currentDate - date < milliseconds);
     }
 }

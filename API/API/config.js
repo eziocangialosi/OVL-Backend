@@ -50,7 +50,7 @@ module.exports = {
     },
     "Discord" : {
         "Enabled" : true,
-        "WebhookURL" : "https://discord.com/api/webhooks/1065751821341163681/YSiE2-n0Tf-OhFhafSv52-lkYP7uYFmRV1B52WdY76drvGg9umZdaVsP3FE3l3YekwRr",
+        "WebhookURL" : "https://discord.com/api/webhooks/1095418538879103016/ai_0MZIW2-BZTjNlmuhAUhJgEftFOuRl6UXA_bCBGhypQTqYAsJHOjREyQ3XmSHljqIH",
     },
     "AdministrationURL": "https://ovl.tech-user.fr:7070/"
 }
