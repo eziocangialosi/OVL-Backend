@@ -99,6 +99,13 @@ const GET_Endpoint_HandleGetSafezone = app.get('/position/safezone/:id/', (req, 
     api_handler.HandleGetTrackerSafezonePosition(req, res)
 })
 /**
+ * This GET endpoint take the unique ID of the tracker : `/position/gpx/:id/` and return the tarcker GPX file.
+ */
+const GET_Endpoint_HandleGetGPX= app.get('/position/gpx/:id/:trackername', (req, res) => { // Endpoint used to get GPX file of a tracker from his id. [TODO]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetGPX]")
+    api_handler.HandleGetTrackerPositionGPX(req, res)
+})
+/**
  * This POST endpoint add a new user to the database.
  */
 const POST_Endpoint_HandleUserAddRequest = app.post('/user/', (req, res) => { // Endpoint to add a user. [DONE]

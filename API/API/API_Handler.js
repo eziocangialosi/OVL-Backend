@@ -11,6 +11,7 @@ const encryption = require('./encryption')
 const ERROR_CODES = require('./error_codes').ERROR_CODES;
 const debug = require('./debug') // Debug function.
 const logs = require('./logs')
+const gpx_handler = require('./GPX_Handler');
 
 function HandleGetTrackerPositionActual(req, res) { // [DONE]
     logs.LogRequest("Request for position of the tracker with the id "+req.params.id)
@@ -91,6 +92,20 @@ function HandleGetTrackerSafezonePosition(req, res) { // Return tracker safezone
     logs.LogRequest("Tracker SafeZone request for tracker with id "+req.params.id)
     mysql.GetTrackerSafezone(req.params.id, function (data) {
         res.status(200).json(data) // Reply with the json object.
+    })
+}
+
+function HandleGetTrackerPositionGPX(req, res) { // Return tracker safezone.
+    logs.LogRequest("Tracker GPX request for tracker with id "+req.params.id)
+    mysql.GetTrackerHistoryPosition(req.params.id, function (data) {
+        if (data.error.Code == 0) {
+            gpx_handler.exportToGPX(req.params.trackername,data.history,function(gpx) {
+                res.status(200).json({ error: ERROR_CODES.ErrorOK, gpx: gpx }) // Reply with the json object.
+            })
+        }
+        else {
+            res.status(200).json({ error: data.error }) // Reply with the json object.
+        }
     })
 }
 
@@ -193,6 +208,15 @@ module.exports = { // Export function for other file to use it.
     */
     HandleGetTrackerSafezonePosition: function (req, res) {
         HandleGetTrackerSafezonePosition(req, res)
+    },
+    /**
+    * Handle a request for the GPX file of a tracker
+    * @param {(Object)} req - Request object of the API CALL.
+    * @param {(Object)} res - Response object of the API CALL.
+    * @returns {(HandleGetTrackerSafeZone_data)} - GPX File and `Error` Object
+    */
+    HandleGetTrackerPositionGPX: function (req, res) {
+        HandleGetTrackerPositionGPX(req, res)
     },
     /**
     * Handle a for all tracker's status of a user.
