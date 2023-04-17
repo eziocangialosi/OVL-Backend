@@ -70,15 +70,39 @@ function SendErrorWebhook(Head,Title,Content) {
 }
 
 module.exports = {
+    /**
+    * Send an Info WebHook to Discord Server setup in `config.js`.
+    * @param {(String)} Head - Title of the Webhook.
+    * @param {(String)} Title - Title of the Field.
+    * @param {(String)} Content - RContent of the Field.
+    */
     SendInfoWebhook: function(Head,Title,Content) {
         SendInfoWebhook(Head,Title,Content)
     },
+    /**
+    * Send an Sucess WebHook to Discord Server setup in `config.js`.
+    * @param {(String)} Head - Title of the Webhook.
+    * @param {(String)} Title - Title of the Field.
+    * @param {(String)} Content - RContent of the Field.
+    */
     SendSucesssWebhook: function(Head,Title,Content) {
         SendSucesssWebhook(Head,Title,Content)
     },
+    /**
+    * Send an Warning WebHook to Discord Server setup in `config.js`.
+    * @param {(String)} Head - Title of the Webhook.
+    * @param {(String)} Title - Title of the Field.
+    * @param {(String)} Content - RContent of the Field.
+    */
     SendWarningWebhook: function(Head,Title,Content) {
         SendWarningWebhook(Head,Title,Content)
     },
+    /**
+    * Send an Error WebHook to Discord Server setup in `config.js`.
+    * @param {(String)} Head - Title of the Webhook.
+    * @param {(String)} Title - Title of the Field.
+    * @param {(String)} Content - RContent of the Field.
+    */
     SendErrorWebhook: function(Head,Title,Content) {
         SendErrorWebhook(Head,Title,Content)
     }
