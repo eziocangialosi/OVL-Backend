@@ -213,7 +213,7 @@ module.exports = { // Export function for other file to use it.
     * Handle a request for the GPX file of a tracker
     * @param {(Object)} req - Request object of the API CALL.
     * @param {(Object)} res - Response object of the API CALL.
-    * @returns {(HandleGetTrackerSafeZone_data)} - GPX File and `Error` Object
+    * @returns {(HandleGetTrackerPositionGPX)} - GPX File and `Error` Object
     */
     HandleGetTrackerPositionGPX: function (req, res) {
         HandleGetTrackerPositionGPX(req, res)

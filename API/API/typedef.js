@@ -135,3 +135,11 @@
  * @property {String} Topics.RX - RX MQTT Topic.
  * @property {String} Topics.TX - TX MQTT Topic.
  */
+/**
+ * @namespace HandleGetTrackerPositionGPX
+ * @property {Error} error - Error Object.
+ * @property {Int} error.Code - The error code.
+ * @property {String} error.Message - The error message.
+ * @property {String} gpx - String containing GPX file data.
+ */
+
