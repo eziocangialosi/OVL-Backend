@@ -317,7 +317,12 @@ function PingLoopCheck() {
         LastContactTime = Math.abs(date.GetTimestamp() - parseInt(GlobalTrackerList[i].timestamp))
         if(LastContactTime > config.TrackerCheckTime) {
             debug.Print("Requesting tracker availability " + GlobalTrackerList[i].name)
-            PingTracker(GlobalTrackerList[i].id, function(data) {})
+            PingTracker(GlobalTrackerList[i].id, function(data) {
+                if(data.error.Code == 0) {
+                    debug.Print("Tracker " + GlobalTrackerList[i].name + " responded, requesting status.");
+                    RequestTrackerStatus(GlobalTrackerList[i].id, function(data) {})
+                }
+            })
         }
     }
     setTimeout(() => { // Wait 5s for tracker to respond.
