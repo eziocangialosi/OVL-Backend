@@ -12,7 +12,7 @@ clear
 cd ..
 cd ./API/API/
 echo "Installing depedencies 2/2..."
-sudo npm i express mysql bcrypt cors mqtt nodemon
+sudo npm i express base64url mysql bcrypt cors mqtt nodemon discord-webhook-node expo-server-sdk express-rate-limit jsonwebtoken
 clear
 echo "Installing services [OVL_Backend.service]..."
 sudo cp ../../Install/OVL_Backend.service /etc/systemd/system/ovl_backend.service
