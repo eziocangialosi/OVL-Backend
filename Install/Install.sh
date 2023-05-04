@@ -31,7 +31,7 @@ sleep 3
 echo "[6/7]  Installing service [OVL_Backend.service]..."
 sudo cp ../../Install/OVL_Backend.service /etc/systemd/system/ovl_backend.service
 clear
-echo "[1/7]  Starting service [OVL_Backend.service]..."
+echo "[7/7]  Starting service [OVL_Backend.service]..."
 sudo systemctl enable --now ovl_backend.service
 clear
 echo Installation of OVL Backend done !
