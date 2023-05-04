@@ -147,13 +147,14 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
     else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
+	debug.Print("Received alarm, processing...");
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
                 GlobalTrackerList[i].status.alarm = 1
                 discord.SendWarningWebhook("Tracker Monitor","Unauthorized move","Unauthorized move of the vehicle with the tracker \"**"+GlobalTrackerList[i].name+"**\""+"\n**You can check the position __[here]("+config.AdministrationURL+"iot/historique.php?iot="+GlobalTrackerList[i].id+")__**")
                 mysql.GetUserInformationFromTopic(GlobalTrackerList[i].topicRX , function(data) {
-                    notifications.SendMoveNotification(data.NotificationToken,GlobalTrackerList[i].name)
+                    notifications.SendMoveNotification(data.notif,GlobalTrackerList[i].name)
                 })
                 debug.Print("Received Alarm from the tracker ["+GlobalTrackerList[i].name+"]")
                 break
@@ -224,6 +225,7 @@ function PingTracker(id, callback) {
     setTimeout(() => { // Wait 5s for tracker to respond.
         if (GlobalTrackerList[Tracker].timestamp == OldTimestamp) {
             ToReturn.error = ERROR_CODES.ErrorMQTTTrackerUnavailable
+            
             mysql.SetTrackerAvailability(GlobalTrackerList[Tracker].id,0)
             debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " did not respond")
         }
@@ -232,7 +234,7 @@ function PingTracker(id, callback) {
             mysql.SetTrackerAvailability(GlobalTrackerList[Tracker].id,1)
             debug.Print("Tracker " + GlobalTrackerList[Tracker].name+ " responded")
         }
-        callback(ToReturn)
+        callback(ToReturn);
     }, 5000);
 }
 
@@ -317,8 +319,8 @@ function PingLoopCheck() {
         LastContactTime = Math.abs(date.GetTimestamp() - parseInt(GlobalTrackerList[i].timestamp))
         if(LastContactTime > config.TrackerCheckTime) {
             debug.Print("Requesting tracker availability " + GlobalTrackerList[i].name)
-            PingTracker(GlobalTrackerList[i].id, function(data) {
-                if(data.error.Code == 0) {
+            PingTracker(GlobalTrackerList[i].id, function(data_) {
+                if(data_.error.Code == 0) {
                     debug.Print("Tracker " + GlobalTrackerList[i].name + " responded, requesting status.");
                     RequestTrackerStatus(GlobalTrackerList[i].id, function(data) {})
                 }
@@ -330,7 +332,7 @@ function PingLoopCheck() {
     }, config.TrackerCheckTime * 1000);
 }
 
-function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protection, status_vh_charge) {
+function UpdateTrackerStatus(id_iot,  status_ecomode, status_protection, status_vh_charge) {
     IsOk = false
     for (let i = 0; i < GlobalTrackerList.length; i++) {
         if (GlobalTrackerList[i].id == id_iot) {
@@ -338,8 +340,7 @@ function UpdateTrackerStatus(id_iot, status_alarm, status_ecomode, status_protec
             GlobalTrackerList[i].status.veh_chg = status_vh_charge
             GlobalTrackerList[i].status.eco_mode = status_ecomode
             GlobalTrackerList[i].status.protection = status_protection
-            GlobalTrackerList[i].status.alarm = status_alarm
-            var to_send = "STG="+status_vh_charge+","+status_ecomode+","+status_protection+","+GlobalTrackerList[i].status.safezone
+            var to_send = "STG="+0+","+status_ecomode+","+status_protection+",30"
             client.publish(GlobalTrackerList[i].topicRX, to_send)
             IsOk = true
             break
