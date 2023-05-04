@@ -7,9 +7,9 @@
 }
  * @property {Bool}    Debug - Whatever the Debug mode is ON/OFF.
  * @property {Object}  Certificate - SSL Settings for the REST API Server.
- * @property {Object}  Certificate.Certificate_folder - Folder where SSL data is stored.
- * @property {String}  Certificate.Key - The name of the Key file.
- * @property {String}  Certificate.Cert.gold - The name of the Cert file.
+ * @property {Object}  Certificate.privateKey - SSL certbot privateKey path.
+ * @property {String}  Certificate.certificate - SSL certbot certificate path.
+ * @property {String}  Certificate.ca - SSL certbot ca path.
  * @property {Int}     Server_Port - The port on which the API is accessible.
  * @property {Object}  MQTT - MQTT server config.
  * @property {String}  MQTT.Server - Url of the MQTT broker.
