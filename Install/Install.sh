@@ -14,10 +14,10 @@ cd ./API/API/
 echo "Installing depedencies 2/2..."
 sudo npm i express base64url mysql bcrypt cors mqtt nodemon discord-webhook-node expo-server-sdk express-rate-limit jsonwebtoken
 clear
-cd ./API/
 echo "Starting SSL certification server, please make sure your machine 80 port is open on your router."
 sudo node setup_ssl.js &
-echo "Launching certbot tool, please follow the install instructions"
+sleep 3
+echo "Launching certbot tool, please follow the install instructions here "
 sudo certbot certonly --manual
 echo "Please note down SSL certificate path, press any key to continue."
 read -n 1 -s
