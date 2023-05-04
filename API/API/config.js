@@ -30,9 +30,9 @@
 module.exports = {
     "Debug": true,
     "Certificate": {
-        "Certificate_folder": "certificate",
-        "Key": "key.pem",
-        "Cert": "cert.pem"
+        "privateKey": "/etc/letsencrypt/live/api.ovl.tech-user.fr/privkey.pem",
+        "certificate": "/etc/letsencrypt/live/api.ovl.tech-user.fr/cert.pem",
+        "ca": "/etc/letsencrypt/live/api.ovl.tech-user.fr/chain.pem"
     },
     "Server_Port": 8080,
     "MQTT": {

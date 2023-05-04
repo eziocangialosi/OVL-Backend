@@ -13,9 +13,9 @@ const api_handler = require('./API_Handler');
 const { ERROR_CODES } = require('./error_codes');
 const discord = require('./discord');
 const app = express() // Create the REST API
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/api.ovl.tech-user.fr/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/api.ovl.tech-user.fr/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/api.ovl.tech-user.fr/chain.pem', 'utf8');
+const privateKey = fs.readFileSync(config.Certificate.privateKey, 'utf8');
+const certificate = fs.readFileSync(config.Certificate.certificate, 'utf8');
+const ca = fs.readFileSync(config.Certificate.ca, 'utf8');
 
 const credentials = {
   key: privateKey,
