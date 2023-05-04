@@ -219,13 +219,14 @@ function GetUserInformationFromTopic(topic, callback) {
             }
             else {
                 ToReturn.id = result[0].id
+                ToReturn.notif = result[0].NotificationToken
             }
         }
         callback(ToReturn);
     });
 }
 
-function AddUserToDb(mail, password, token, callback) {
+function AddUserToDb(mail, password, token, notif, callback) {
     ToReturn = new Object();
     ToReturn.error = ERROR_CODES.ErrorOK
     con.query("SELECT * FROM users WHERE email='" + mail + "'", (err, result) => {
@@ -235,7 +236,7 @@ function AddUserToDb(mail, password, token, callback) {
         }
         else {
             if (result[0] == undefined) {
-                var sql = "INSERT INTO users (email, password, token) VALUES ('" + mail + "', '" + password + "', '" + token + "')"
+                var sql = "INSERT INTO users (email, password, token, NotificationToken) VALUES ('" + mail + "', '" + password + "', '" + token + "', '"+ notif + "')"
                 con.query(sql, function (err, result) {
                     if (err) {
                         ToReturn.error = ERROR_CODES.ErrorSQLInjectError
@@ -273,7 +274,7 @@ function AddTrackerToUser(token, trackerName, password, callback) { // Used to a
                     }
                     else { // If nothing fail.
                         TrackerId = result[0].ID + 1 // As the result only count the existing entries we add 1.
-                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user, safeZoneDiam, lonSfz, latSfz) VALUES ('" + trackerName + "', '" + password + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "','15','0.0','0.0')", function (err, result) {
+                        con.query("INSERT INTO CredentialsTracker (trackerName, MQTTpswd, topicRX, topicTX, id_user, safeZoneDiam, lonSfz, latSfz) VALUES ('" + trackerName + "', '" + password + "', 'topicRX_" + TrackerId + "', 'topicTX_" + TrackerId + "','" + UserId + "','30','0.0','0.0')", function (err, result) {
                             if (err) {
                                 console.error(err)
                                 ToReturn.error = err
@@ -444,8 +445,6 @@ function SetTrackerSafezone(id,lat,lon, callback) {
 }
 
 function AddRequestLog(request) {
-    ToReturn = new Object();
-    ToReturn.error = ERROR_CODES.ErrorOK
     con.query("INSERT INTO LogRq (description,timestamp) VALUES ('"+request+"','"+date.GetTimestamp()+"')", (err, result) => {
         if (err) {
             console.error(err)
@@ -454,8 +453,6 @@ function AddRequestLog(request) {
 }
 
 function AddUserLogin(user) {
-    ToReturn = new Object();
-    ToReturn.error = ERROR_CODES.ErrorOK
     con.query("INSERT INTO logUser (id_user,timestamp) VALUES ('"+user+"','"+date.GetTimestamp()+"')", (err, result) => {
         if (err) {
             console.error(err)
@@ -464,8 +461,6 @@ function AddUserLogin(user) {
 }
 
 function SetTrackerAvailability(Tracker_ID,State) {
-    ToReturn = new Object();
-    ToReturn.error = ERROR_CODES.ErrorOK
     con.query("UPDATE Status_IOT SET status_online = '"+State+"' WHERE id_iot = '"+Tracker_ID+"'", (err, result) => {
         if (err) {
             console.error(err)
@@ -495,10 +490,11 @@ module.exports = { // Export funtion for other file to use it.
      * @param {(String)} mail - The e-mail of the user.
      * @param {(String)} password - The hash password of the user.
      * @param {(String)} token - The auth token of the user.
+     * @param {(String)} notif - Notification token 
      * @param {Function} callback - The callback to trigger.
      */
-    AddUserToDb: function (mail, pass, token, callback) {
-        AddUserToDb(mail, pass, token, callback)
+    AddUserToDb: function (mail, pass, token, notif, callback) {
+        AddUserToDb(mail, pass, token, notif, callback)
     },
     /**
      * Fetch all data of a user from his mail.

@@ -12,6 +12,7 @@ const ERROR_CODES = require('./error_codes').ERROR_CODES;
 const debug = require('./debug') // Debug function.
 const logs = require('./logs')
 const gpx_handler = require('./GPX_Handler');
+const notifications = require('./notifications');
 
 function HandleGetTrackerPositionActual(req, res) { // [DONE]
     logs.LogRequest("Request for position of the tracker with the id "+req.params.id)
@@ -70,7 +71,10 @@ function HandleStatusRequest(req, res) { //
 function HandleUserAddRequest(req, res) { // Add user to DB if it dosen't exist.
     logs.LogRequest("Add user request with  "+req.body.mail)
     encryption.EncryptPassword(req.body.password, function (hash) {
-        mysql.AddUserToDb(req.body.mail, hash, encryption.randomStringAsBase64Url(20), function (data) {
+        mysql.AddUserToDb(req.body.mail, hash, encryption.randomStringAsBase64Url(20),req.body.notif, function (data) {
+            if(data.error.Code == 0) {
+                notifications.SendAccountCreationSuccess(req.body.notif,req.body.mail);
+            }
             res.status(200).json(data) // Reply with the json object.
         });
     })

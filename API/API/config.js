@@ -23,7 +23,7 @@
  * @property {String}  Database_Config.password - MariaDB Server Password.
  * @property {String}  Database_Config.database - MariaDB Server Database Name.
  * @property {Object}  Discord - Discord webhooks config.
- * @property {Bool}  Discord.Enabled - Whatever Discord webhooks is enabled or not.
+ * @property {Bool}    Discord.Enabled - Whatever Discord webhooks is enabled or not.
  * @property {String}  Discord.WebhookURL - Discord webhook URL.
  * @property {String}  AdministrationURL - URL of the Administration Website.
  */
@@ -52,5 +52,5 @@ module.exports = {
         "Enabled" : true,
         "WebhookURL" : "https://discord.com/api/webhooks/1095418538879103016/ai_0MZIW2-BZTjNlmuhAUhJgEftFOuRl6UXA_bCBGhypQTqYAsJHOjREyQ3XmSHljqIH",
     },
-    "AdministrationURL": "https://ovl.tech-user.fr"
+    "AdministrationURL": "https://ovl.tech-user.fr/"
 }

@@ -13,8 +13,15 @@ const api_handler = require('./API_Handler');
 const { ERROR_CODES } = require('./error_codes');
 const discord = require('./discord');
 const app = express() // Create the REST API
-const key = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Key));
-const cert = fs.readFileSync(path.join(__dirname, config.Certificate.Certificate_folder, config.Certificate.Cert));
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/api.ovl.tech-user.fr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/api.ovl.tech-user.fr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/api.ovl.tech-user.fr/chain.pem', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca
+};
 const rateLimit = require('express-rate-limit');
 const notification = require('./notifications');
 const limiter = rateLimit({
@@ -39,7 +46,7 @@ app.use(cors({ // This setup the REST API
 /**
  * Create the REST API Server, listen on port setup in `config.Server_Port`.
  */
-const Server = https.createServer({ key, cert }, app).listen(config.Server_Port, () => { // Create secure HTTPS REST API
+const Server = https.createServer(credentials, app).listen(config.Server_Port, () => { // Create secure HTTPS REST API
     debug.Print("Server started and ready to respond.")
     discord.SendSucesssWebhook("API","REST API Status","Server started and ready to respond.")
 })
