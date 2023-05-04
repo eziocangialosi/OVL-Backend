@@ -18,7 +18,7 @@ Here is the install process
 1. Clone the repo to your linux root (/) : `sudo git clone https://github.com/eziocangialosi/OVL-Backend.git /API`
 2. Run the following command with root privileges : `cd /API/Install && sudo chmod +x ./Install.sh && sudo ./Install.sh`
 3. When prompted follow the [Certbot setup process](#Certbot-setup-process) ⚠️ **without this step API will not work** ⚠️
-4. Follow the install progress, after run the following command `systemctl status ovl_backend.service` , if all goes right you will see something like [this](https://github.com/eziocangialosi/OVL-Backend/blob/master/Install/image/1680551717284.png "Screenshot of OVL Backend systemd service.")![1680551717284](image/README/1680551717284.png)
+4. Follow the install progress, after run the following command `systemctl status ovl_backend.service` , if all goes right you will see something like [this](https://github.com/eziocangialosi/OVL-Backend/blob/master/Install/image/README/1680551717284.png "Screenshot of OVL Backend systemd service.")![1680551717284](image/README/1680551717284.png)
 
 ## Certbot setup process
 
