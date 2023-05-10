@@ -16,22 +16,19 @@ const app = express() // Create the REST API
 const privateKey = fs.readFileSync(config.Certificate.privateKey, 'utf8');
 const certificate = fs.readFileSync(config.Certificate.certificate, 'utf8');
 const ca = fs.readFileSync(config.Certificate.ca, 'utf8');
-
-const credentials = {
+const credentials = { // Load certficate for SSL needs.
   key: privateKey,
   cert: certificate,
   ca: ca
 };
-const rateLimit = require('express-rate-limit');
-const notification = require('./notifications');
+const rateLimit = require('express-rate-limit'); // Need to avoid API spam and crash.
 const limiter = rateLimit({
-	windowMs: 1000, // 15 minutes
+	windowMs: 1000, // 1s
 	max: 400, // Limit each IP to 400 requests per `window` (here, per second)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
-// Apply the rate limiting middleware to all requests
-app.use(limiter)
+app.use(limiter) // Apply the rate limiting middleware to all requests
 app.use(express.json()); // Needed for the json format response.
 app.use(express.urlencoded({ extended: true })); // Allow urlencode parameters.
 /**
