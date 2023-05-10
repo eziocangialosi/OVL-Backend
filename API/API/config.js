@@ -7,7 +7,7 @@
 }
  * @property {Bool}    Debug - Whatever the Debug mode is ON/OFF.
  * @property {Object}  Certificate - SSL Settings for the REST API Server.
- * @property {Object}  Certificate.privateKey - SSL certbot privateKey path.
+ * @property {String}  Certificate.privateKey - SSL certbot privateKey path.
  * @property {String}  Certificate.certificate - SSL certbot certificate path.
  * @property {String}  Certificate.ca - SSL certbot ca path.
  * @property {Int}     Server_Port - The port on which the API is accessible.
