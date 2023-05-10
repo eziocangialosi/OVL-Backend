@@ -22,13 +22,21 @@ const credentials = { // Load certficate for SSL needs.
   ca: ca
 };
 const rateLimit = require('express-rate-limit'); // Need to avoid API spam and crash.
-const limiter = rateLimit({
+const APILimit = rateLimit({
 	windowMs: 1000, // 1s
 	max: 400, // Limit each IP to 400 requests per `window` (here, per second)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
-app.use(limiter) // Apply the rate limiting middleware to all requests
+const loginLimit = rateLimit({
+	windowMs: 1000,
+	max: 1,
+	message:
+		'Too many request to login, please wait and retry !',
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+app.use(APILimit) // Apply the rate limiting middleware to all requests
 app.use(express.json()); // Needed for the json format response.
 app.use(express.urlencoded({ extended: true })); // Allow urlencode parameters.
 /**
@@ -56,8 +64,8 @@ const GET_Endpoint_ROOT = app.get('/', (req, res) => { // Redirect '/' to web in
 /**
  * This GET endpoint take a mail and a password : `/user/:mail/:password`.
  */
-const GET_Endpoint_HandleUserInfoRequest = app.get('/user/:mail/:password', function (req, res) { // Endpoint to get the token of the user. [NEED ADD TOKEN]
-    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleUserInfoRequest]")
+const GET_Endpoint_HandleUserInfoRequest = app.get('/user/:mail/:password',loginLimit, function (req, res) { // Endpoint to get the token of the user. [NEED ADD TOKEN]
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request   [HandleUserInfoRequest]")
     api_handler.HandleUserInfoRequest(req, res)
 })
 /**
