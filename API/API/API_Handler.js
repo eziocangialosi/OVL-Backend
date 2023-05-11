@@ -125,7 +125,7 @@ function HandleGetStatusList(req, res) { // Return all status from all trackers 
     })
 }
 
-function HandleSetStatus(req, res) { // Set a tracker status [TODO]
+function HandleSetStatus(req, res) { // Set a tracker status [DONE]
     mysql.SetTrackerStatus(req.body.id_iot, req.body.status_ecomode, req.body.status_protection, req.body.status_vh_charge, function (data) {
         if(data.error.Code == 0) {
             //logs.LogRequest("Tracker status updated in DB for tracker "+req.body.id_iot)
