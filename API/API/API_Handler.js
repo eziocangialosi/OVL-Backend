@@ -99,7 +99,7 @@ function HandleGetTrackerSafezonePosition(req, res) { // Return tracker safezone
     })
 }
 
-function HandleGetTrackerPositionGPX(req, res) { // Return tracker safezone.
+function HandleGetTrackerPositionGPX(req, res) { // Return tracker GPX file.
     logs.LogRequest("Tracker GPX request for tracker with id "+req.params.id)
     mysql.GetTrackerHistoryPosition(req.params.id, function (data) {
         if (data.error.Code == 0) {
