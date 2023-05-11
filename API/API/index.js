@@ -59,27 +59,27 @@ const Server = https.createServer(credentials, app).listen(config.Server_Port, (
  * The root GET endpoint is used to redirect to the web interface.
  */
 const GET_Endpoint_ROOT = app.get('/', (req, res) => { // Redirect '/' to web interface. [DONE]
-    res.redirect(config.AdministrationURL) // Redirect to le Z web interface.
+    res.redirect(config.AdministrationURL);
 })
 /**
  * This GET endpoint take a mail and a password : `/user/:mail/:password`.
  */
 const GET_Endpoint_HandleUserInfoRequest = app.get('/user/:mail/:password',loginLimit, function (req, res) { // Endpoint to get the token of the user. [NEED ADD TOKEN]
-    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request   [HandleUserInfoRequest]")
-    api_handler.HandleUserInfoRequest(req, res)
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request   [HandleUserInfoRequest]");
+    api_handler.HandleUserInfoRequest(req, res);
 })
 /**
  * This GET endpoint take the unique ID of the tracker : `/status/:id_iot/`.
  */
 const GET_Endpoint_HandleStatusRequest = app.get('/status/:id_iot/', (req, res) => { // Get Status
     debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleStatusRequest]")
-    api_handler.HandleStatusRequest(req, res)
+    api_handler.HandleStatusRequest(req, res);
 })
 /**
  * This GET endpoint take the auth token of the user : `/iot_list/:token/`.
  */
 const GET_Endpoint_HandleGetUserTrackers = app.get('/iot_list/:token/', (req, res) => { // Endpoint used to get the list of trackers from a user token. [DONE]
-    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetUserTrackers]")
+    debug.Print("Received request on "+req.headers.host+req.url+"\n"+"GET Request [HandleGetUserTrackers]");
     api_handler.HandleGetUserTrackers(req, res);
 })
 /**
