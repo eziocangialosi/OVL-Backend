@@ -15,16 +15,7 @@ function SendPushNotification(Device, Sound, Title, Desc, Data) {
     return
   }
   // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
-  messages.push({
-    to: Device,
-    title: Title,
-    sound: Sound,
-    body: Desc,
-    mutableContent: true,
-    badge: 0,
-    priority: "normal",
-    data: Data,
-  })
+  messages.push({to: Device,title: Title,sound: Sound,body: Desc,mutableContent: true,badge: 0,priority: "normal",data: Data,})
   let chunks = expo.chunkPushNotifications(messages);
   let tickets = [];
   (async () => {
