@@ -27,6 +27,3 @@ Heres is a list of all md files which can help you to install or understand this
 
 
 If you're not looking for the backend part you can navigate between all the repositories in the [Project navigator](https://github.com/eziocangialosi/OpenVehicleLocator#project-navigation).
-
-> **Warning**
-> All the project is **UNREADY** for deployment ! An alpha version will be released in the coming months...
