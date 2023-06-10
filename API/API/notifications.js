@@ -70,11 +70,6 @@ function SendAccountCreationSuccess(Device, Account) {
   SendPushNotification(Device,'default',"Open Vehicule Locator", "Account "+Account+" successfully created ✅",{});
 }
 
-//SendPushNotification("ExponentPushToken[jK2L7sMjMPkNEI_B6neF0Q]", 'default', 'OVL Project', 'Just a test notification for our backend.', {}) // Send a Notification to my iPhone SE 3 with the provided data.
-SendMoveNotification("ExponentPushToken[jK2L7sMjMPkNEI_B6neF0Q]","Dacia Logan DCI 1.5");
-
-SendMoveNotification("ExponentPushToken[SDi_MZEagzEIs6LOqOfasK]","Dacia Logan DCI 1.5");
-
 module.exports = {
   /**
      * Send a notification to user iDevice in case of an Unauthorized Move of a tracker.
