@@ -15,6 +15,9 @@ mysql OVL < OVL_DB_Sheme.sql
 clear
 cd ..
 cd ./API/API/
+sudo mosquitto_passwd -b mqtt-password MQTT_REST_API ABigAndKomplexP@ssWord
+sudo cp mosquitto_passwd /etc/mosquitto/mosquitto_passwd
+sudo systemctl reload mosquitto.service
 echo "[5/7]  Installing depedencies 2/2..."
 sudo npm i express base64url mysql bcrypt cors mqtt nodemon discord-webhook-node expo-server-sdk express-rate-limit jsonwebtoken
 clear
