@@ -4,7 +4,7 @@ clear
 sudo apt full-upgrade -y
 clear
 echo "[2/7]  Installing depedencies 1/2..."
-sudo apt install -y nodejs npm mariadb-server certbot
+sudo apt install -y nodejs npm mariadb-server certbot mosquitto
 clear
 echo "[3/7]  Setting up mariadb user..."
 mysql -e "UPDATE mysql.user SET Password=PASSWORD('ABigAndKomplexP@ssWord') WHERE User='root'; quit;"
