@@ -30,27 +30,27 @@
 module.exports = {
     "Debug": true,
     "Certificate": {
-        "privateKey": "/etc/letsencrypt/live/api.ovl.tech-user.fr/privkey.pem",
-        "certificate": "/etc/letsencrypt/live/api.ovl.tech-user.fr/cert.pem",
-        "ca": "/etc/letsencrypt/live/api.ovl.tech-user.fr/chain.pem"
+        "privateKey": "/etc/letsencrypt/live/example.com/privkey.pem",
+        "certificate": "/etc/letsencrypt/live/example.com/cert.pem",
+        "ca": "/etc/letsencrypt/live/example.com/chain.pem"
     },
     "Server_Port": 8080,
     "MQTT": {
-        "Server" : "mqtt://ovl.tech-user.fr:6868",
-        "Username" : "MQTT_REST_API",
-        "Password" : "ABigAndKomplexP@ssWord"
+        "Server" : "mqtt://example.com",
+        "Username" : "username",
+        "Password" : "pswd"
     },
     "TrackerCheckTime": 299,
     "QuantityOfPosPerTracker": 20,
     "Database_Config": {
-        "host": "192.168.1.18",
+        "host": "0.0.0.0",
         "user": "root",
-        "password": "ABigAndKomplexP@ssWord",
+        "password": "password",
         "database": "OVL"
     },
     "Discord" : {
-        "Enabled" : true,
-        "WebhookURL" : "https://discord.com/api/webhooks/1095418538879103016/ai_0MZIW2-BZTjNlmuhAUhJgEftFOuRl6UXA_bCBGhypQTqYAsJHOjREyQ3XmSHljqIH",
+        "Enabled" : false,
+        "WebhookURL" : "",
     },
-    "AdministrationURL": "https://ovl.tech-user.fr/"
+    "AdministrationURL": "https://example.com/"
 }
