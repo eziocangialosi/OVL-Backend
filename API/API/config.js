@@ -36,21 +36,21 @@ module.exports = {
     },
     "Server_Port": 8080,
     "MQTT": {
-        "Server" : "mqtt://example.com",
+        "Server" : "mqtt://127.0.0.1",
         "Username" : "username",
         "Password" : "pswd"
     },
     "TrackerCheckTime": 299,
     "QuantityOfPosPerTracker": 20,
     "Database_Config": {
-        "host": "0.0.0.0",
+        "host": "127.0.0.1",
         "user": "root",
-        "password": "password",
+        "password": "ABigAndKomplexP@ssWord",
         "database": "OVL"
     },
     "Discord" : {
         "Enabled" : false,
         "WebhookURL" : "",
     },
-    "AdministrationURL": "https://example.com/"
+    "AdministrationURL": "https://ovl.tech-user.fr"
 }

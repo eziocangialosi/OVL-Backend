@@ -5,7 +5,8 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('./config'); // Load config file.
-const https = require('https'); // Required to use HTTPS for the REST API
+const https = require('https');
+const http = require('http');
 const express = require('express'); // Required for the REST API to work.
 const cors = require('cors') // Needed to sertup REST API for mobile use.
 const debug = require('./debug') // Debug function.
@@ -13,14 +14,25 @@ const api_handler = require('./API_Handler');
 const { ERROR_CODES } = require('./error_codes');
 const discord = require('./discord');
 const app = express() // Create the REST API
-const privateKey = fs.readFileSync(config.Certificate.privateKey, 'utf8');
-const certificate = fs.readFileSync(config.Certificate.certificate, 'utf8');
-const ca = fs.readFileSync(config.Certificate.ca, 'utf8');
-const credentials = { // Load certficate for SSL needs.
-  key: privateKey,
-  cert: certificate,
-  ca: ca
-};
+
+// Determine if SSL certificates exist
+let useHttps = true;
+let credentials = {};
+try {
+  const privateKey = fs.readFileSync(config.Certificate.privateKey, 'utf8');
+  const certificate = fs.readFileSync(config.Certificate.certificate, 'utf8');
+  const ca = fs.readFileSync(config.Certificate.ca, 'utf8');
+  credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca,
+  };
+} catch (err) {
+  debug.Print('SSL certificates not found, falling back to HTTP.');
+  useHttps = false;
+}
+
+
 const rateLimit = require('express-rate-limit'); // Need to avoid API spam and crash.
 const APILimit = rateLimit({
 	windowMs: 1000, // 1s
@@ -51,10 +63,16 @@ app.use(cors({ // This setup the REST API
 /**
  * Create the REST API Server, listen on port setup in `config.Server_Port`.
  */
-const Server = https.createServer(credentials, app).listen(config.Server_Port, () => { // Create secure HTTPS REST API
-    debug.Print("Server started and ready to respond.")
-    discord.SendSucesssWebhook("API","REST API Status","Server started and ready to respond.")
-})
+// Define the server based on SSL availability
+const server = useHttps
+  ? https.createServer(credentials, app)
+  : http.createServer(app);
+
+// Server listening
+server.listen(config.Server_Port, () => {
+  debug.Print(`Server started on ${useHttps ? 'HTTPS' : 'HTTP'} and ready to respond.`);
+  discord.SendSucesssWebhook('API', 'REST API Status', `Server started on ${useHttps ? 'HTTPS' : 'HTTP'} and ready to respond.`);
+});
 /**
  * The root GET endpoint is used to redirect to the web interface.
  */
