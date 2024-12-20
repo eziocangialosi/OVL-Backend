@@ -19,7 +19,7 @@ module.exports = { // Export funtion for other file to use it.
         if (config.Debug == true) {
             str = "[" + date.GetDate() + "] [" + date.GetTime() + "] -> " + data + "\n"
             console.log(str)
-            fs.appendFile('Logs.log', str, function (err) {
+            fs.appendFile('/var/log/ovl/backend/Logs.log', str, function (err) {
                 if (err) throw err;
               });
         }

@@ -44,6 +44,7 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'ABigAndKomplexP@ssWo
 echo "[5/7] Copying API files..."
 cp -r ./API/API/* "$install_path"
 cd $install_path
+mkdir -p /var/log/ovl/backend
 
 # Mosquitto Setup
 echo "Setting up Mosquitto password..."
