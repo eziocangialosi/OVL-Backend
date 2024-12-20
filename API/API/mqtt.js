@@ -77,12 +77,13 @@ client.on('connect', function () {
  * This listener take the `topic` and the `message` of MQTT frames, and trigger the corresponding actions.
  */
 const MQTT_Listener = client.on('message', function (topic, message) {
-    debug.Print("Received MQTT message from ["+topic+"] --> " + message.toString())
+    data = message.toString()
+    debug.Print("Received MQTT message from ["+topic+"] --> " + data.toString())
     topic = topic.replace('TX', 'RX') // Replace topic type to respond on other topic.
-    if (message.toString().startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
+    if (data.startsWith("SYN")) { // Confirm connection to tracker (Acknowledge Hand Check).
         client.publish(topic, 'SYN-ACK') // Respond to the message.
     }
-    else if (message.toString().startsWith("STG-RQ")) { // Settings request.
+    else if (data.startsWith("STG-RQ")) { // Settings request.
         mysql.GetTrackerStatus(topic, function (data) {
             for (let i = 0; i < GlobalTrackerList.length; i++) {
                 if (GlobalTrackerList[i].topicRX == topic) {
@@ -97,15 +98,15 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             client.publish(topic, to_send)
         })
     }
-    else if (message.toString().startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker. mosquitto_pub -h ovl.tech-user.fr -p 6868 -t TX -m "STS=bat,charge,veh_chg,eco-mode,protection,alarm,gps"
+    else if (data.startsWith("STS=")) { // Acknowledge reception of status and get status data of the tracker. mosquitto_pub -h ovl.tech-user.fr -p 6868 -t TX -m "STS=bat,charge,veh_chg,eco-mode,protection,alarm,gps"
         TrackerStatus = {
-            bat: message.toString().split('=')[1].split(',')[0],
-            charge: message.toString().split(',')[1].split(',')[0],
-            veh_chg: message.toString().split(',')[2].split(',')[0],
-            eco_mode: message.toString().split(',')[3].split(',')[0],
-            protection: message.toString().split(',')[4].split(',')[0],
-            alarm: message.toString().split(',')[5].split(',')[0],
-            gps: message.toString().split(',')[6],
+            bat: data.split('=')[1].split(',')[0],
+            charge: data.split(',')[1].split(',')[0],
+            veh_chg: data.split(',')[2].split(',')[0],
+            eco_mode: data.split(',')[3].split(',')[0],
+            protection: data.split(',')[4].split(',')[0],
+            alarm: data.split(',')[5].split(',')[0],
+            gps: data.split(',')[6],
         }
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
@@ -120,10 +121,10 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             }
         })
     }
-    else if (message.toString().startsWith("PING")) { // Ping request from Tracker.
+    else if (data.startsWith("PING")) { // Ping request from Tracker.
         client.publish(topic, 'PONG') // Respond to the message.
     }
-    else if (message.toString().startsWith("PONG")) { // Pong response from Tracker.
+    else if (data.startsWith("PONG")) { // Pong response from Tracker.
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
                 GlobalTrackerList[i].timestamp = date.GetTimestamp()
@@ -131,10 +132,10 @@ const MQTT_Listener = client.on('message', function (topic, message) {
             }
         }
     }
-    else if (message.toString().startsWith("POS=")) { // Position of the tracker. mosquitto_pub -h ovl.tech-user.fr -u "freewind" -P "password" -p 6868 -t topicTX_3 -m "POS=0.0,10.0"
+    else if (data.startsWith("POS=")) { // Position of the tracker. mosquitto_pub -h ovl.tech-user.fr -u "freewind" -P "password" -p 6868 -t topicTX_3 -m "POS=0.0,10.0"
         TrackerPosition = {
-            lat: message.toString().split('=')[1].split(',')[0],
-            lon: message.toString().split(',')[1],
+            lat: data.split('=')[1].split(',')[0],
+            lon: data.split(',')[1],
         }
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
@@ -146,7 +147,7 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         }
         client.publish(topic, 'POS-ACK') // Respond to the message.
     }
-    else if (message.toString().startsWith("ALM")) { // Position error for the tracker.
+    else if (data.startsWith("ALM")) { // Position error for the tracker.
 	debug.Print("Received alarm, processing...");
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
@@ -162,9 +163,9 @@ const MQTT_Listener = client.on('message', function (topic, message) {
         }
         client.publish(topic, 'ALM-ACK') // Respond to the message.
     }
-    else if (message.toString().startsWith("SFZ=")) { // Retrieve Safezone position.
-        lat = message.toString().split('=')[1].split(',')[0]
-        lon = message.toString().split(',')[1]
+    else if (data.startsWith("SFZ=")) { // Retrieve Safezone position.
+        lat = data.split('=')[1].split(',')[0]
+        lon = data.split(',')[1]
         id = 0
         for (let i = 0; i < GlobalTrackerList.length; i++) {
             if (GlobalTrackerList[i].topicRX == topic) {
